@@ -1,0 +1,54 @@
+# -----------------------------
+# Flutter/Dart/Pub related
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.pub-cache/
+.pub/
+.packages
+/build/
+**/build/
+**/doc/api/
+**/ios/Flutter/.last_build_id
+
+# Obfuscation and symbolication
+app.*.symbols
+app.*.map.json
+
+# -----------------------------
+# Android related
+android/.gradle/
+android/local.properties
+/android/app/debug
+/android/app/profile
+/android/app/release
+
+# -----------------------------
+# iOS related (optional for future)
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Generated.xcconfig
+
+# -----------------------------
+# IDEs and Editors
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# VS Code (optional: uncomment to ignore)
+#.vscode/
+
+# Misc
+*.class
+*.log
+*.pyc
+*.swp
+.DS_Store
+.atom/
+.build/
+.buildlog/
+.history
+.svn/
+.swiftpm/
+migrate_working_dir/
