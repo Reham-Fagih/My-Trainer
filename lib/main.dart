@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Pages/SignUp.dart';
 
 void main() {
   runApp(const MyApp());
@@ -13,7 +14,11 @@ class MyApp extends StatelessWidget{
 
     return  MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: Scaffold(
+      home: SignUpPage(),
+    );
+  }
+}
+      /*home: Scaffold(
        backgroundColor: Colors.white10,
   appBar: AppBar(
   backgroundColor: Colors.deepPurple,
@@ -58,4 +63,4 @@ class MyApp extends StatelessWidget{
 
   }
 }
-
+*/
