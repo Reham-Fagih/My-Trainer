@@ -28,7 +28,7 @@ class Welcom extends StatelessWidget {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, "/login");
+                      Navigator.pushNamed(context, "/LogInPage");
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,
@@ -52,7 +52,7 @@ class Welcom extends StatelessWidget {
                   width: 300,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.pushNamed(context, "/signup");
+                      Navigator.pushNamed(context, "/SignUpPage");
                     },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.white,

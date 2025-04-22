@@ -9,13 +9,16 @@ class LogInPage extends StatelessWidget {
       body: Stack(
           children: [
             Image.asset(
-              'assets/images/background.png',
+
+              'assets/images/background.png',  // Need to chaang background
               fit: BoxFit.cover,
               height: double.infinity,
               width: double.infinity,
             ),
           ],
       ),
+
     );
   }
+
 }
