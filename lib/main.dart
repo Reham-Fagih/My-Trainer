@@ -1,67 +1,28 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_project/Pages/LogIn.dart';
+import 'package:flutter_first_project/Pages/Welcom.dart';
 import 'Pages/SignUp.dart';
+
 
 void main() {
   runApp(const MyApp());
 }
 
-class MyApp extends StatelessWidget{
-
-  const MyApp ({super.key});
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
 
   @override
-  Widget build(BuildContext context)  {
-
-    return  MaterialApp(
+  Widget build(BuildContext context) {
+    return MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: SignUpPage()
+      initialRoute: "/",
+      routes: {
+        "/": (context) => const Welcom(),
+        "/SignUpPage": (context) => const SignUpPage(),
+        "/LogInPage": (context) => const LogInPage(),
+
+      },
     );
   }
 }
-      /*home: Scaffold(
-       backgroundColor: Colors.white10,
-  appBar: AppBar(
-  backgroundColor: Colors.deepPurple,
-  leading: Icon(Icons.menu , color: Colors.white,size: 30,),
-  actions: [
-    IconButton
-      (onPressed: (){},
-          icon: Icon(
-            Icons.logout,
-            color: Colors.white,
-            size: 30,
-          ),
-      ),
-  ],
-  
-),
 
-       body: Center(
-         child: Container(
-           height: 300,
-           width: 300,
-          decoration: BoxDecoration(
-            color: Colors.blue,
-            borderRadius: BorderRadius.circular(20),
-          ),
-
-           child: Icon(
-
-             Icons.favorite,
-             color: Colors.white,
-             size:100,
-
-
-
-
-           ),
-         ),
-       ),
-      ),
-
-    );
-
-  }
-}
-*/
