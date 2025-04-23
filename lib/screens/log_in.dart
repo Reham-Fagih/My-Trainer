@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_first_project/Pages/forget_password.dart';
+import 'services/forget_password.dart';
 
 class LogInPage extends StatelessWidget {
   const LogInPage({super.key});

@@ -1,7 +1,7 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_first_project/Pages/log_in.dart';
-import 'package:flutter_first_project/Pages/welcome.dart';
-import 'Pages/sign_up.dart';
+import 'package:flutter/material.dart';//where is this?
+import 'screens/log_in.dart';
+import 'screens/welcome.dart';
+import 'screens/sign_up.dart';
 
 
 void main() {
