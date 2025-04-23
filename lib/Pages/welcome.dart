@@ -11,7 +11,6 @@ class Welcom extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image
           Image.asset(
             'assets/images/welcome.png',
             fit: BoxFit.cover,
@@ -19,7 +18,6 @@ class Welcom extends StatelessWidget {
             width: double.infinity,
           ),
 
-          // Centered buttons
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,

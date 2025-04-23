@@ -10,7 +10,6 @@ class ForgotPasswordPage extends StatelessWidget {
     return Scaffold(
       body: Stack(
         children: [
-          // === Background ===
           Image.asset(
             'assets/images/LoginBackground.jpg',
             fit: BoxFit.cover,
@@ -18,7 +17,6 @@ class ForgotPasswordPage extends StatelessWidget {
             width: double.infinity,
           ),
 
-          // === Main Content ===
           Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),

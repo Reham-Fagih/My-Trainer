@@ -15,22 +15,23 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController phoneController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
-  Future<void> submitForm() async {
-    String email = emailController.text.trim();
-    String phone = phoneController.text.trim();
-    String password = passwordController.text.trim();
+Future<void> submitForm() async {
+  String email = emailController.text.trim();
+  String phone = phoneController.text.trim();
+  String password = passwordController.text.trim();
 
-    if (email.isEmpty || phone.isEmpty || password.isEmpty) {
-      log("Please fill all fields");
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
-      );
-      return;
-    }
+  if (email.isEmpty || phone.isEmpty || password.isEmpty) {
+    log("Please fill all fields");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Please fill all fields')),
+    );
+    return;
+  }
 
-    final host = 'http://10.0.2.2:5000';
-    final url = Uri.parse('$host/signup');
+  final host = 'http://10.0.2.2:5000'; // emulator local address
+  final url = Uri.parse('$host/signup');
 
+  try {
     final response = await http.post(
       url,
       headers: {"Content-Type": "application/json"},
@@ -44,16 +45,30 @@ class _SignUpPageState extends State<SignUpPage> {
     log("Response status: ${response.statusCode}");
     log("Response body: ${response.body}");
 
+    final responseBody = jsonDecode(response.body);
+
     if (response.statusCode == 201) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Sign Up Successful')),
+        SnackBar(content: Text('✅ ${responseBody['msg']}')),
       );
+      // Optionally clear the form or navigate
+      emailController.clear();
+      phoneController.clear();
+      passwordController.clear();
     } else {
+      String errorMsg = responseBody['msg'] ?? responseBody['error'] ?? 'Something went wrong';
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${response.body}')),
+        SnackBar(content: Text('❌ $errorMsg')),
       );
     }
+  } catch (e) {
+    log("Error during sign up: $e");
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error: $e')),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
@@ -148,7 +163,6 @@ class _SignUpPageState extends State<SignUpPage> {
 
                     SizedBox(height: 20),
 
-                    // Submit Button
                     ElevatedButton(
                       onPressed: submitForm,
                       style: ElevatedButton.styleFrom(
