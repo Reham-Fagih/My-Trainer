@@ -4,6 +4,7 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+console.log("MONGODB_URI is:", process.env.MONGODB_URI);
 
 const app = express();
 app.use(cors());
