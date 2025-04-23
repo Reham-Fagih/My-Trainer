@@ -23,7 +23,6 @@ router.post("/signup", async (req, res) => {
   }
 });
 
-// Login route
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -34,11 +33,8 @@ router.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "1h",
-    });
-
-    res.status(200).json({ message: "Login successful", token });
+    // If login is successful, you can return a success message (no JWT for now)
+    res.status(200).json({ message: "Login successful" });
   } catch (err) {
     res.status(500).json({ message: "Error logging in" });
   }

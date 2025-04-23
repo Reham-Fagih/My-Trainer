@@ -57,10 +57,10 @@ class ForgotPasswordPage extends StatelessWidget {
 
                     ElevatedButton(
                       onPressed: () {
-                        //
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(content: Text('Password reset link sent!')),
                         );
+                        Navigator.pop(context); // Go back to login page
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF05262F),
