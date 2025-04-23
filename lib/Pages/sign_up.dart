@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'dart:developer'; // تم إضافته بدل print
-import 'package:flutter/foundation.dart' show kIsWeb;
+import 'dart:developer'; 
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -23,6 +22,9 @@ class _SignUpPageState extends State<SignUpPage> {
 
     if (email.isEmpty || phone.isEmpty || password.isEmpty) {
       log("Please fill all fields");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please fill all fields')),
+      );
       return;
     }
 
@@ -43,11 +45,13 @@ class _SignUpPageState extends State<SignUpPage> {
     log("Response body: ${response.body}");
 
     if (response.statusCode == 201) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Sign Up Successful')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Sign Up Successful')),
+      );
     } else {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text('Error: ${response.body}')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${response.body}')),
+      );
     }
   }
 
@@ -57,7 +61,7 @@ class _SignUpPageState extends State<SignUpPage> {
       body: Stack(
         children: [
           Image.asset(
-            'assets/images/background.png',
+            'assets/images/SignupBackground.jpg',
             fit: BoxFit.cover,
             height: double.infinity,
             width: double.infinity,
@@ -65,65 +69,96 @@ class _SignUpPageState extends State<SignUpPage> {
           Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  SizedBox(height: 80),
-                  Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      fontSize: 40,
-                      color: Color(0xFF05262F),
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    width: 290,
-                    child: TextField(
-                      controller: emailController,
-                      decoration: InputDecoration(
-                        hintText: 'Email',
-                        filled: true,
-                        fillColor: Color(0xFFD6D6D6),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(height: 80),
+
+                    // Title
+                    Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        fontSize: 40,
+                        color: Color(0xFF05262F),
+                        fontWeight: FontWeight.bold,
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    width: 290,
-                    child: TextField(
-                      controller: phoneController,
-                      decoration: InputDecoration(
-                        hintText: 'Phone',
-                        filled: true,
-                        fillColor: Color(0xFFD6D6D6),
+
+                    SizedBox(height: 20),
+
+                    // Email
+                    Container(
+                      width: 290,
+                      child: TextField(
+                        controller: emailController,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.email),
+                          hintText: 'Email',
+                          filled: true,
+                          fillColor: Color(0xFFD6D6D6),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  Container(
-                    width: 290,
-                    child: TextField(
-                      controller: passwordController,
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        hintText: 'Password',
-                        filled: true,
-                        fillColor: Color(0xFFD6D6D6),
+
+                    SizedBox(height: 20),
+
+                    // Phone
+                    Container(
+                      width: 290,
+                      child: TextField(
+                        controller: phoneController,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.phone),
+                          hintText: 'Phone',
+                          filled: true,
+                          fillColor: Color(0xFFD6D6D6),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
                       ),
                     ),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                    onPressed: submitForm,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xFF05262F),
-                      foregroundColor: Colors.white,
+
+                    SizedBox(height: 20),
+
+                    // Password
+                    Container(
+                      width: 290,
+                      child: TextField(
+                        controller: passwordController,
+                        obscureText: true,
+                        decoration: InputDecoration(
+                          prefixIcon: Icon(Icons.lock),
+                          hintText: 'Password',
+                          filled: true,
+                          fillColor: Color(0xFFD6D6D6),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                        ),
+                      ),
                     ),
-                    child: Text('Submit'),
-                  )
-                ],
+
+                    SizedBox(height: 20),
+
+                    // Submit Button
+                    ElevatedButton(
+                      onPressed: submitForm,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xFF05262F),
+                        foregroundColor: Colors.white,
+                      ),
+                      child: Text('Submit'),
+                    )
+                  ],
+                ),
               ),
             ),
           ),
