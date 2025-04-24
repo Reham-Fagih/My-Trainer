@@ -152,7 +152,7 @@ final TextEditingController passwordController = TextEditingController();
                       child: Text("Submit"),
                     ),
                     const SizedBox(height: 12),
-
+/*
                     Row(
                       children: [
                         Expanded(
@@ -173,8 +173,12 @@ final TextEditingController passwordController = TextEditingController();
                         ),
                       ],
                     ),
-                    const SizedBox(height: 12),
 
+
+                    const SizedBox(height: 12),
+                    */
+
+/*
                     // Google Login Button To be removed??
                     ElevatedButton.icon(
                       onPressed: () {},
@@ -197,6 +201,7 @@ final TextEditingController passwordController = TextEditingController();
                         foregroundColor: Colors.white,
                       ),
                     ),
+                    */
                   ],
                 ),
               ),
