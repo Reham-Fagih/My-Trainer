@@ -128,7 +128,6 @@ final TextEditingController passwordController = TextEditingController();
                     ),
 
                     Align(
-                      alignment: Alignment.centerRight,
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
@@ -139,6 +138,7 @@ final TextEditingController passwordController = TextEditingController();
                         child: Text(
                           "Forgot password?",
                           style: TextStyle(color: Color(0xFF6BB0FF)), // Light Blue
+                          textAlign: TextAlign.center,
                         ),
                       ),
                     ),
