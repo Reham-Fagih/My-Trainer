@@ -18,9 +18,34 @@ class _SignUpPageState extends State<SignUpPage> {
     String phone = phoneController.text.trim();
     String password = passwordController.text.trim();
 
+    // Check for empty fields
     if (email.isEmpty || phone.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
+        const SnackBar(content: Text('Please fill all fields')),
+      );
+      return;
+    }
+
+    // Validate phone number: must start with 05 and be 10 digits
+    if (!RegExp(r'^05\d{8}$').hasMatch(phone)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Phone number must start with 05 and be 10 digits')),
+      );
+      return;
+    }
+
+    // Validate email format
+    if (!RegExp(r'^[\w\.-]+@([\w\-]+\.)+[A-Za-z]{2,4}$').hasMatch(email)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please enter a valid email')),
+      );
+      return;
+    }
+
+    // Validate password length (minimum 6 characters)
+    if (password.length < 6) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Password must be at least 6 characters')),
       );
       return;
     }
@@ -56,8 +81,8 @@ class _SignUpPageState extends State<SignUpPage> {
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(height: 80),
-                    Text(
+                    const SizedBox(height: 80),
+                    const Text(
                       'Sign Up',
                       style: TextStyle(
                         fontSize: 40,
@@ -65,20 +90,20 @@ class _SignUpPageState extends State<SignUpPage> {
                         fontWeight: FontWeight.bold,
                       ),
                     ),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     buildTextField(emailController, 'Email', Icons.email),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     buildTextField(phoneController, 'Phone', Icons.phone),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     buildTextField(passwordController, 'Password', Icons.lock, obscure: true),
-                    SizedBox(height: 20),
+                    const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: submitForm,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xFF05262F),
+                        backgroundColor: const Color(0xFF05262F),
                         foregroundColor: Colors.white,
                       ),
-                      child: Text('Submit'),
+                      child: const Text('Submit'),
                     )
                   ],
                 ),
@@ -100,7 +125,7 @@ class _SignUpPageState extends State<SignUpPage> {
           prefixIcon: Icon(icon),
           hintText: hint,
           filled: true,
-          fillColor: Color(0xFFD6D6D6),
+          fillColor: const Color(0xFFD6D6D6),
           border: OutlineInputBorder(
             borderRadius: BorderRadius.circular(12),
             borderSide: BorderSide.none,
