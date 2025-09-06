@@ -15,9 +15,11 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-// Routes list here:
-const authRoutes = require("./routes/authRoutes.js");
+const authRoutes = require("./routes/authRoutes");
+const predictRoutes = require("./routes/predictRoutes");
+
 app.use("/", authRoutes);
+app.use("/", predictRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {

@@ -4,7 +4,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
-// Signup route
 router.post("/signup", async (req, res) => {
   const { email, phone, password } = req.body;
 
@@ -22,7 +21,6 @@ router.post("/signup", async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 });
-
 router.post("/login", async (req, res) => {
   const { email, password } = req.body;
 
@@ -33,9 +31,23 @@ router.post("/login", async (req, res) => {
     const match = await bcrypt.compare(password, user.password);
     if (!match) return res.status(401).json({ message: "Invalid credentials" });
 
-    res.status(200).json({ message: "Login successful" });
+    const token = jwt.sign(
+      { userId: user._id, email: user.email },
+      process.env.JWT_SECRET || "KeYScea",
+      { expiresIn: "7d" }
+    );
+
+    res.status(200).json({
+      message: "Login successful",
+      token,
+      user: {
+        _id: user._id,
+        email: user.email,
+        phone: user.phone,
+      },
+    });
   } catch (err) {
-    res.status(500).json({ message: "Error logging in" });
+    res.status(500).json({ message: "Error logging in", error: err.message });
   }
 });
 

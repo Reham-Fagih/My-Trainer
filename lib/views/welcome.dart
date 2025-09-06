@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 
-
 import 'package:flutter/material.dart';
 
-class Welcom extends StatelessWidget {
-  const Welcom({Key? key}) : super(key: key);
+class Welcome extends StatelessWidget {
+  const Welcome({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,6 @@ class Welcom extends StatelessWidget {
             height: double.infinity,
             width: double.infinity,
           ),
-
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
@@ -37,11 +35,7 @@ class Welcom extends StatelessWidget {
                     ),
                     child: Text(
                       "Log In",
-                      style: TextStyle(
-                          color: Color(0xFF2A4F53),
-                          fontSize: 30
-                      ),
-
+                      style: TextStyle(color: Color(0xFF2A4F53), fontSize: 30),
                     ),
                   ),
                 ),
@@ -62,10 +56,9 @@ class Welcom extends StatelessWidget {
                     child: Text(
                       "Sign Up",
                       style: TextStyle(
-                        fontSize: 30 ,
+                        fontSize: 30,
                         color: Color(0xFF2A4F53),
                       ),
-
                     ),
                   ),
                 ),
@@ -77,4 +70,3 @@ class Welcom extends StatelessWidget {
     );
   }
 }
-

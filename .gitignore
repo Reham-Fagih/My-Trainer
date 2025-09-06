@@ -1,33 +1,50 @@
 # -----------------------------
-# Flutter/Dart/Pub related
+# Flutter/Dart
 .dart_tool/
-.flutter-plugins
-.flutter-plugins-dependencies
-.pub-cache/
-.pub/
 .packages
-/build/
+.pub/
+.pub-cache/
+build/
 **/build/
 **/doc/api/
-**/ios/Flutter/.last_build_id
-
-# Obfuscation and symbolication
+.flutter-plugins
+.flutter-plugins-dependencies
+ios/Flutter/Generated.xcconfig
+ios/Pods/
 app.*.symbols
 app.*.map.json
+flutter_export_environment.sh
+*.apk
+*.aab
+*.ipa
 
 # -----------------------------
-# Android related
-android/.gradle/
-android/local.properties
-/android/app/debug
-/android/app/profile
-/android/app/release
+# Node.js / Backend
+node_modules/
+npm-debug.log*
+yarn-error.log*
+dist/
+build/
+.env
+package-lock.json
 
 # -----------------------------
-# iOS related (optional for future)
-ios/Pods/
-ios/.symlinks/
-ios/Flutter/Generated.xcconfig
+# Python / AI backend
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+env/
+venv/
+.venv/
+.temp/
+.temp_env/
+.python-version
+*.h5
+*.keras
+*.ipynb_checkpoints/
+.pytest_cache/
+*.log
 
 # -----------------------------
 # IDEs and Editors
@@ -35,23 +52,18 @@ ios/Flutter/Generated.xcconfig
 *.iml
 *.ipr
 *.iws
-
-# VS Code (optional: uncomment to ignore)
-#.vscode/
-
-# Misc
-*.class
-*.log
-*.pyc
+.vscode/
+*.sublime-workspace
+*.sublime-project
 *.swp
-.DS_Store
+*.DS_Store
 .atom/
 .build/
 .buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
+.history/
+.migrate_working_dir/
 
-.env
-backend/node_modules/
+# -----------------------------
+# OS specific
+Thumbs.db
+desktop.ini

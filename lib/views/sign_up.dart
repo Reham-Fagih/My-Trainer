@@ -18,7 +18,6 @@ class _SignUpPageState extends State<SignUpPage> {
     String phone = phoneController.text.trim();
     String password = passwordController.text.trim();
 
-    // Check for empty fields
     if (email.isEmpty || phone.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please fill all fields')),
@@ -26,15 +25,14 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    // Validate phone number: must start with 05 and be 10 digits
     if (!RegExp(r'^05\d{8}$').hasMatch(phone)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Phone number must start with 05 and be 10 digits')),
+        const SnackBar(
+            content: Text('Phone number must start with 05 and be 10 digits')),
       );
       return;
     }
 
-    // Validate email format
     if (!RegExp(r'^[\w\.-]+@([\w\-]+\.)+[A-Za-z]{2,4}$').hasMatch(email)) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Please enter a valid email')),
@@ -42,7 +40,6 @@ class _SignUpPageState extends State<SignUpPage> {
       return;
     }
 
-    // Validate password length (minimum 6 characters)
     if (password.length < 6) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Password must be at least 6 characters')),
@@ -59,7 +56,6 @@ class _SignUpPageState extends State<SignUpPage> {
       emailController.clear();
       phoneController.clear();
       passwordController.clear();
-      // You could also navigate to another page here
     }
   }
 
@@ -95,7 +91,8 @@ class _SignUpPageState extends State<SignUpPage> {
                     const SizedBox(height: 20),
                     buildTextField(phoneController, 'Phone', Icons.phone),
                     const SizedBox(height: 20),
-                    buildTextField(passwordController, 'Password', Icons.lock, obscure: true),
+                    buildTextField(passwordController, 'Password', Icons.lock,
+                        obscure: true),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: submitForm,
@@ -115,8 +112,10 @@ class _SignUpPageState extends State<SignUpPage> {
     );
   }
 
-  Widget buildTextField(TextEditingController controller, String hint, IconData icon, {bool obscure = false}) {
-    return Container(
+  Widget buildTextField(
+      TextEditingController controller, String hint, IconData icon,
+      {bool obscure = false}) {
+    return SizedBox(
       width: 290,
       child: TextField(
         controller: controller,

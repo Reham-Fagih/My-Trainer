@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "form-data": "^4.0.4"
+  },
+  "name": "senior-project",
+  "description": "A new Flutter project.",
+  "version": "1.0.0",
+  "main": "index.js",
+  "directories": {
+    "lib": "lib",
+    "test": "test"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Reham-Fagih/Senior-Project.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Reham-Fagih/Senior-Project/issues"
+  },
+  "homepage": "https://github.com/Reham-Fagih/Senior-Project#readme"
+}

@@ -1,29 +1,37 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
+import 'package:flutter_first_project/services/forget_password.dart';
 import 'package:http/http.dart' as http;
-import '../services/forget_password.dart'; // Make sure to import the ForgotPasswordPage
+import 'package:shared_preferences/shared_preferences.dart';
+import 'upload_screen.dart';
 
-class LogInPage extends StatelessWidget {
-   LogInPage({super.key});
+class LogInPage extends StatefulWidget {
+  const LogInPage({super.key});
 
-  // Removed const and final from the controller declarations
-final TextEditingController emailController = TextEditingController();
-final TextEditingController passwordController = TextEditingController();
+  @override
+  State<LogInPage> createState() => _LogInPageState();
+}
 
-  // Login Functionality
+class _LogInPageState extends State<LogInPage> {
+  final TextEditingController emailController = TextEditingController();
+  final TextEditingController passwordController = TextEditingController();
+  bool _loading = false;
+
   Future<void> loginUser(BuildContext context) async {
-    String email = emailController.text.trim();
-    String password = passwordController.text.trim();
+    final email = emailController.text.trim();
+    final password = passwordController.text.trim();
 
     if (email.isEmpty || password.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please fill all fields')),
+        const SnackBar(content: Text('Please fill all fields')),
       );
       return;
     }
 
-    final host = 'http://10.0.2.2:5000'; // Adjust as needed for your backend
+    final host = "http://10.0.2.2:5000";
     final url = Uri.parse('$host/login');
+
+    setState(() => _loading = true);
 
     try {
       final response = await http.post(
@@ -32,26 +40,34 @@ final TextEditingController passwordController = TextEditingController();
         body: jsonEncode({"email": email, "password": password}),
       );
 
-      print("Response Status Code: ${response.statusCode}");
-      print("Response Body: ${response.body}");
-
       final responseBody = jsonDecode(response.body);
-
       if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('✅ ${responseBody['message']}')),
+        final token = responseBody['token'];
+        final user = responseBody['user'];
+
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString("authToken", token);
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => UploadScreen(
+              baseUrl: host,
+              userId: user["_id"],
+            ),
+          ),
         );
-        Navigator.pushReplacementNamed(context, "/home"); //here if success needs to change the page to our home
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('❌ ${responseBody['message'] ?? 'Error'}')),
+          SnackBar(content: Text(responseBody['message'] ?? 'Login failed')),
         );
       }
     } catch (e) {
-      print("Error: $e");
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: $e')),
+        SnackBar(content: Text("Error: $e")),
       );
+    } finally {
+      setState(() => _loading = false);
     }
   }
 
@@ -67,8 +83,7 @@ final TextEditingController passwordController = TextEditingController();
             height: double.infinity,
             width: double.infinity,
           ),
-          
-          // Main Content
+
           Center(
             child: Padding(
               padding: const EdgeInsets.all(16.0),
@@ -78,7 +93,6 @@ final TextEditingController passwordController = TextEditingController();
                   children: [
                     Icon(Icons.fitness_center, size: 60, color: Colors.white),
                     const SizedBox(height: 20),
-
                     const Text(
                       "Log in",
                       style: TextStyle(
@@ -88,9 +102,7 @@ final TextEditingController passwordController = TextEditingController();
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Email Field
-                    Container(
+                    SizedBox(
                       width: 290,
                       child: TextField(
                         controller: emailController,
@@ -107,9 +119,7 @@ final TextEditingController passwordController = TextEditingController();
                       ),
                     ),
                     const SizedBox(height: 20),
-
-                    // Password Field
-                    Container(
+                    SizedBox(
                       width: 290,
                       child: TextField(
                         controller: passwordController,
@@ -126,23 +136,23 @@ final TextEditingController passwordController = TextEditingController();
                         ),
                       ),
                     ),
-
                     Align(
                       child: TextButton(
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(builder: (_) => ForgotPasswordPage()),
+                            MaterialPageRoute(
+                                builder: (_) => ForgotPasswordPage()),
                           );
                         },
                         child: Text(
                           "Forgot password?",
-                          style: TextStyle(color: Color(0xFF6BB0FF)), // Light Blue
+                          style:
+                              TextStyle(color: Color(0xFF6BB0FF)), // Light Blue
                           textAlign: TextAlign.center,
                         ),
                       ),
                     ),
-
                     ElevatedButton(
                       onPressed: () => loginUser(context),
                       style: ElevatedButton.styleFrom(
