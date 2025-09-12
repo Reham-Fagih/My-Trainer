@@ -39,14 +39,13 @@ class _UploadScreenState extends State<UploadScreen> {
     }
   }
 
-
   Future<void> uploadAndPredict() async {
     if (_selectedImage == null) return;
     setState(() => _loading = true);
 
     try {
       final response =
-          await controller.predictFromImage(_selectedImage!, widget.userId);
+      await controller.predictFromImage(_selectedImage!, widget.userId);
 
       setState(() {
         _bfPercent = response.bfPercent;
@@ -58,92 +57,108 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() => _loading = false);
     }
   }
-// ---------------------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          // Image Header
-          Container(
-            height: 200,
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage("assets/images/Header.png"), // <-- header image
-                fit: BoxFit.contain,
-
-              ),
-            ),
-          ),
-
-          // Body
-          GestureDetector(
-            onTap: () => pickImage(ImageSource.camera),
-            child: Container(
-              margin: const EdgeInsets.only(top: 20.0),
+      body: SingleChildScrollView(
+        child: Column(
+          children: [
+            // Image Header
+            Container(
               height: 200,
               decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage("assets/images/TakePicButton.png"),
+                  image: AssetImage("assets/images/Header.png"),
                   fit: BoxFit.contain,
                 ),
               ),
             ),
-          ),
 
-
-          GestureDetector(
-            onTap: () => pickImage(ImageSource.gallery),
-            child: Container(
-              margin: const EdgeInsets.only(top: 25.0),
-              height: 200,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/UploudButton.png"),
-                  fit: BoxFit.contain,
-                ),
-              ),
-            ),
-          ),
-
-
-
-          Expanded(
-            child: Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                children: [
-                  const SizedBox(height: 10),
-                  ElevatedButton.icon(
-                    icon: _loading
-                        ? const SizedBox(
-                      height: 16,
-                      width: 16,
-                      child: CircularProgressIndicator(
-                        color: Colors.white,
-                        strokeWidth: 2,
-                      ),
-                    )
-                        : const Icon(Icons.cloud_upload),
-                    label: const Text("Predict"),
-                    onPressed: _loading ? null : uploadAndPredict,
+            // Take Picture Button
+            GestureDetector(
+              onTap: () => pickImage(ImageSource.camera),
+              child: Container(
+                margin: const EdgeInsets.only(top: 20.0),
+                height: 200,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/TakePicButton.png"),
+                    fit: BoxFit.contain,
                   ),
-                  const SizedBox(height: 20),
-                  /* In result page
-                  if (_bfPercent != null)
-                    Text(
-                      "Estimated Body Fat: ${_bfPercent!.toStringAsFixed(2)}%",
-                      style: const TextStyle(
-                          fontSize: 20, fontWeight: FontWeight.bold),
-                    ), */
-                ],
+                ),
               ),
             ),
+
+            // Pick from Gallery Button
+            GestureDetector(
+              onTap: () => pickImage(ImageSource.gallery),
+              child: Container(
+                margin: const EdgeInsets.only(top: 25.0),
+                height: 200,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/UploudButton.png"),
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+            ),
+
+            // Upload & Predict Button
+            Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: ElevatedButton.icon(
+                icon: _loading
+                    ? const SizedBox(
+                  height: 16,
+                  width: 16,
+                  child: CircularProgressIndicator(
+                    color: Colors.white,
+                    strokeWidth: 2,
+                  ),
+                )
+                    : const Icon(Icons.cloud_upload),
+                label: const Text("Predict"),
+                onPressed: _loading ? null : uploadAndPredict,
+              ),
+            ),
+          ],
+        ),
+      ),
+
+      // ---------------- Footer ----------------
+      bottomNavigationBar: Container(
+        height: 90,
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/FooterBackground.png"),
+            fit: BoxFit.cover,
           ),
-        ],
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: [
+
+            IconButton(
+              icon: const Icon(Icons.person, color: Colors.white, size: 45),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/");
+                }
+            ),
+            IconButton(
+              icon: const Icon(Icons.home, color: Colors.white, size: 45),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/");
+                }            ),
+            IconButton(
+              icon: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 40),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/");
+                }            ),
+          ],
+        ),
       ),
     );
   }
-
 }
