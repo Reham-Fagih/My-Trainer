@@ -29,16 +29,16 @@ class _UploadScreenState extends State<UploadScreen> {
         PredictionController(apiService: ApiService(baseUrl: widget.baseUrl));
   }
 
-  Future<void> pickImage() async {
-    final picked =
-        await picker.pickImage(source: ImageSource.gallery, imageQuality: 85);
+  Future<void> pickImage(ImageSource source) async {
+    final picked = await picker.pickImage(source: source, imageQuality: 85);
     if (picked != null) {
       setState(() {
         _selectedImage = File(picked.path);
-        _bfPercent = null;
+        _bfPercent = null; // reset previous prediction
       });
     }
   }
+
 
   Future<void> uploadAndPredict() async {
     if (_selectedImage == null) return;
@@ -58,32 +58,66 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() => _loading = false);
     }
   }
+// ---------------------------------------------------------------------------//
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Upload Image")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            _selectedImage != null
-                ? Image.file(_selectedImage!, height: 200)
-                : Container(
-                    height: 200,
-                    color: Colors.grey[300],
-                    child: const Center(child: Text("No image selected")),
-                  ),
-            const SizedBox(height: 20),
-            ElevatedButton.icon(
-              icon: const Icon(Icons.photo),
-              label: const Text("Pick Image"),
-              onPressed: pickImage,
+      body: Column(
+        children: [
+          // Image Header
+          Container(
+            height: 200,
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/Header.png"), // <-- header image
+                fit: BoxFit.contain,
+
+              ),
             ),
-            const SizedBox(height: 10),
-            ElevatedButton.icon(
-              icon: _loading
-                  ? const SizedBox(
+          ),
+
+          // Body
+          GestureDetector(
+            onTap: () => pickImage(ImageSource.camera),
+            child: Container(
+              margin: const EdgeInsets.only(top: 20.0),
+              height: 200,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/TakePicButton.png"),
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+
+
+          GestureDetector(
+            onTap: () => pickImage(ImageSource.gallery),
+            child: Container(
+              margin: const EdgeInsets.only(top: 25.0),
+              height: 200,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/UploudButton.png"),
+                  fit: BoxFit.contain,
+                ),
+              ),
+            ),
+          ),
+
+
+
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                children: [
+                  const SizedBox(height: 10),
+                  ElevatedButton.icon(
+                    icon: _loading
+                        ? const SizedBox(
                       height: 16,
                       width: 16,
                       child: CircularProgressIndicator(
@@ -91,20 +125,25 @@ class _UploadScreenState extends State<UploadScreen> {
                         strokeWidth: 2,
                       ),
                     )
-                  : const Icon(Icons.cloud_upload),
-              label: const Text("Upload & Predict"),
-              onPressed: _loading ? null : uploadAndPredict,
-            ),
-            const SizedBox(height: 20),
-            if (_bfPercent != null)
-              Text(
-                "Estimated Body Fat: ${_bfPercent!.toStringAsFixed(2)}%",
-                style:
-                    const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                        : const Icon(Icons.cloud_upload),
+                    label: const Text("Predict"),
+                    onPressed: _loading ? null : uploadAndPredict,
+                  ),
+                  const SizedBox(height: 20),
+                  /* In result page
+                  if (_bfPercent != null)
+                    Text(
+                      "Estimated Body Fat: ${_bfPercent!.toStringAsFixed(2)}%",
+                      style: const TextStyle(
+                          fontSize: 20, fontWeight: FontWeight.bold),
+                    ), */
+                ],
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
     );
   }
+
 }
