@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controllers/prediction_controller.dart';
 import '../services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class UploadScreen extends StatefulWidget {
   final String baseUrl;
@@ -157,9 +158,10 @@ class _UploadScreenState extends State<UploadScreen> {
                 }),
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white, size: 40),
-              onPressed: () {
-                Navigator.pushReplacementNamed(
-                    context, "/welcome"); // زر Logout
+              onPressed: () async {
+                final prefs = await SharedPreferences.getInstance();
+                await prefs.remove('authToken');
+                Navigator.pushReplacementNamed(context, "/welcome");
               },
             ),
           ],
