@@ -45,7 +45,7 @@ class _UploadScreenState extends State<UploadScreen> {
 
     try {
       final response =
-      await controller.predictFromImage(_selectedImage!, widget.userId);
+          await controller.predictFromImage(_selectedImage!, widget.userId);
 
       setState(() {
         _bfPercent = response.bfPercent;
@@ -111,13 +111,13 @@ class _UploadScreenState extends State<UploadScreen> {
               child: ElevatedButton.icon(
                 icon: _loading
                     ? const SizedBox(
-                  height: 16,
-                  width: 16,
-                  child: CircularProgressIndicator(
-                    color: Colors.white,
-                    strokeWidth: 2,
-                  ),
-                )
+                        height: 16,
+                        width: 16,
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                          strokeWidth: 2,
+                        ),
+                      )
                     : const Icon(Icons.cloud_upload),
                 label: const Text("Predict"),
                 onPressed: _loading ? null : uploadAndPredict,
@@ -139,23 +139,29 @@ class _UploadScreenState extends State<UploadScreen> {
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-
             IconButton(
-              icon: const Icon(Icons.person, color: Colors.white, size: 45),
+                icon: const Icon(Icons.person, color: Colors.white, size: 45),
                 onPressed: () {
                   Navigator.pushNamed(context, "/");
-                }
+                }),
+            IconButton(
+                icon: const Icon(Icons.home, color: Colors.white, size: 45),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/");
+                }),
+            IconButton(
+                icon: const Icon(Icons.camera_alt_rounded,
+                    color: Colors.white, size: 40),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/");
+                }),
+            IconButton(
+              icon: const Icon(Icons.logout, color: Colors.white, size: 40),
+              onPressed: () {
+                Navigator.pushReplacementNamed(
+                    context, "/welcome"); // زر Logout
+              },
             ),
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white, size: 45),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/");
-                }            ),
-            IconButton(
-              icon: const Icon(Icons.camera_alt_rounded, color: Colors.white, size: 40),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/");
-                }            ),
           ],
         ),
       ),
