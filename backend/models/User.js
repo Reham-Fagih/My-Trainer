@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
 const predictionSchema = new mongoose.Schema({
   value: { type: Number, required: true },
@@ -12,4 +12,4 @@ const userSchema = new mongoose.Schema({
   predictions: [predictionSchema],
 });
 
-module.exports = mongoose.model("User", userSchema);
+export default mongoose.model("User", userSchema);

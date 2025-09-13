@@ -1,13 +1,17 @@
-const fs = require("fs");
-const multer = require("multer");
-const axios = require("axios");
-const FormData = require("form-data");
-const express = require("express");
-const path = require("path");
-const router = express.Router();
-const authMiddleware = require("../middleware/auth");
+import fs from "fs";
+import path from "path";
+import multer from "multer";
+import axios from "axios";
+import FormData from "form-data";
+import express from "express";
+import authMiddleware from "../middleware/auth.js";
+import User from "../models/User.js";
 
+const router = express.Router();
+
+const __dirname = path.resolve();
 const UPLOAD_DIR = path.join(__dirname, "../uploads");
+
 if (!fs.existsSync(UPLOAD_DIR)) {
   fs.mkdirSync(UPLOAD_DIR);
 }
@@ -18,6 +22,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => cb(null, Date.now() + "-" + file.originalname),
 });
+
 const upload = multer({ storage });
 
 router.post(
@@ -43,7 +48,9 @@ router.post(
       const response = await axios.post(
         "http://127.0.0.1:5001/predict",
         formData,
-        { headers: formData.getHeaders() }
+        {
+          headers: formData.getHeaders(),
+        }
       );
 
       const bfPercent = response.data.bfPercent;
@@ -51,7 +58,6 @@ router.post(
         `[Node Server] Predicted BF% for user ${userId}: ${bfPercent}`
       );
 
-      const User = require("../models/User");
       const user = await User.findById(userId);
       if (user) {
         user.predictions.push({ value: bfPercent });
@@ -67,4 +73,4 @@ router.post(
   }
 );
 
-module.exports = router;
+export default router;

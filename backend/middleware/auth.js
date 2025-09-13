@@ -1,5 +1,5 @@
 // middleware/auth.js
-const jwt = require("jsonwebtoken");
+import jwt from "jsonwebtoken";
 
 function authMiddleware(req, res, next) {
   const authHeader = req.headers["authorization"];
@@ -15,10 +15,10 @@ function authMiddleware(req, res, next) {
     (err, decoded) => {
       if (err)
         return res.status(403).json({ message: "Invalid or expired token" });
-      req.user = decoded; // decoded = { userId, email }
+      req.user = decoded;
       next();
     }
   );
 }
 
-module.exports = authMiddleware;
+export default authMiddleware;
