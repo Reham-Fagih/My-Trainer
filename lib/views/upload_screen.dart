@@ -159,9 +159,31 @@ class _UploadScreenState extends State<UploadScreen> {
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white, size: 40),
               onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.remove('authToken');
-                Navigator.pushReplacementNamed(context, "/welcome");
+                final confirm = await showDialog<bool>(
+                  context: context,
+                  builder: (context) {
+                    return AlertDialog(
+                      title: const Text("Confirm Logout"),
+                      content: const Text("Are you sure you want to logout?"),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, false),
+                          child: const Text("Cancel"),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.pop(context, true),
+                          child: const Text("Logout"),
+                        ),
+                      ],
+                    );
+                  },
+                );
+
+                if (confirm == true) {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.remove('authToken');
+                  Navigator.pushReplacementNamed(context, "/welcome");
+                }
               },
             ),
           ],

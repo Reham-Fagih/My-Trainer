@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 
 class AuthService {
-  final String baseUrl = 'http://10.0.2.2:5000'; // For Android emulator
+  final String baseUrl = 'http://172.20.10.2:5000'; // For google chrome
 
   Future<String> register(String email, String phone, String password) async {
     final url = Uri.parse('$baseUrl/signup');
