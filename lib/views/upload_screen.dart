@@ -80,7 +80,7 @@ class _UploadScreenState extends State<UploadScreen> {
             GestureDetector(
               onTap: () => pickImage(ImageSource.camera),
               child: Container(
-                margin: const EdgeInsets.only(top: 20.0),
+                margin: const EdgeInsets.only(top: 45.0),
                 height: 200,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -95,7 +95,7 @@ class _UploadScreenState extends State<UploadScreen> {
             GestureDetector(
               onTap: () => pickImage(ImageSource.gallery),
               child: Container(
-                margin: const EdgeInsets.only(top: 25.0),
+                margin: const EdgeInsets.only(top: 30.0),
                 height: 200,
                 decoration: const BoxDecoration(
                   image: DecorationImage(
@@ -107,9 +107,18 @@ class _UploadScreenState extends State<UploadScreen> {
             ),
 
             // Upload & Predict Button
+            if (_selectedImage != null)
             Padding(
-              padding: const EdgeInsets.all(16.0),
+              padding: const EdgeInsets.all(30.0),
               child: ElevatedButton.icon(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.blueGrey,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15),
+                  ),
+                  elevation: 2,
+                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
+                ),
                 icon: _loading
                     ? const SizedBox(
                         height: 16,
@@ -119,8 +128,17 @@ class _UploadScreenState extends State<UploadScreen> {
                           strokeWidth: 2,
                         ),
                       )
-                    : const Icon(Icons.cloud_upload),
-                label: const Text("Predict"),
+                    : const Icon(Icons.cloud_upload,color: Colors.white,size: 30,),
+
+                label: Text(
+
+                  _loading ? "Uploading" : "Predict",
+                  style: const TextStyle(
+                    fontSize:20,
+                    color: Colors.white,
+
+                  ),
+                ),
                 onPressed: _loading ? null : uploadAndPredict,
               ),
             ),
