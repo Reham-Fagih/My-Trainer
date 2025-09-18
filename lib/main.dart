@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_first_project/views/workout_place.dart';
+import 'views/workout_duration.dart';
+import 'views/workout_place.dart';
 import 'views/log_in.dart';
 import 'views/welcome.dart';
 import 'views/sign_up.dart';
@@ -28,6 +29,8 @@ class MyApp extends StatelessWidget {
               userId: "temp", // replace with real userId after login
             ),
         "/WorkoutPlacePage": (context) => const WorkoutPlacePage(),
+        "/WorkoutDurationPage": (context) => const WorkoutDurationPage(),
+
       },
     );
   }
