@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_first_project/views/workout_place.dart';
 import 'views/log_in.dart';
+import 'views/nutrition_goal.dart';
+import 'views/nutrition_page.dart';
 import 'views/welcome.dart';
 import 'views/sign_up.dart';
 import 'views/upload_screen.dart';
@@ -19,6 +21,8 @@ class MyApp extends StatelessWidget {
       initialRoute: "/",
       routes: {
         "/": (context) => const Welcome(),
+        "/nutrition": (context) => const ActivityLevelPage(),
+        "/nutritionGoal": (context) => const NutritionGoalPage(),
         "/welcome": (context) => const Welcome(), //Logout
         "/SignUpPage": (context) => const SignUpPage(),
         "/LogInPage": (context) => const LogInPage(),
