@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'views/home.dart';
+import 'views/profile.dart';
 import 'views/workout_duration.dart';
 import 'views/workout_place.dart';
 import 'views/log_in.dart';
@@ -31,6 +33,8 @@ class MyApp extends StatelessWidget {
         "/welcome": (context) => const Welcome(), //Logout
         "/SignUpPage": (context) => const SignUpPage(),
         "/LogInPage": (context) => const LogInPage(),
+        "/ProfilePage": (context) => const ProfilePage(),
+        "/HomePage": (context) => const HomePage(),
         "/UploadPage": (context) => const UploadScreen(
               baseUrl:
                   "http://10.0.2.2:5000", // adjust if your backend is different

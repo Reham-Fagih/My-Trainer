@@ -161,18 +161,18 @@ class _UploadScreenState extends State<UploadScreen> {
             IconButton(
                 icon: const Icon(Icons.person, color: Colors.white, size: 45),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/");
+                  Navigator.pushNamed(context, "/ProfilePage");
                 }),
             IconButton(
                 icon: const Icon(Icons.home, color: Colors.white, size: 45),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/");
+                  Navigator.pushNamed(context, "/HomePage");
                 }),
             IconButton(
                 icon: const Icon(Icons.camera_alt_rounded,
                     color: Colors.white, size: 40),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/");
+                  Navigator.pushNamed(context, "/UploadScreen");
                 }),
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white, size: 40),

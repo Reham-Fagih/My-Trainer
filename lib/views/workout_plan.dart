@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-// NOT FINISHED YET
+
 class WorkoutPlanPage extends StatefulWidget {
   const WorkoutPlanPage({super.key});
 
@@ -8,20 +8,18 @@ class WorkoutPlanPage extends StatefulWidget {
 }
 
 class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-          // Background
+
           Positioned.fill(
             child: Image.asset(
               'assets/images/WorkoutpageBackground.png',
               fit: BoxFit.cover,
             ),
           ),
-
 
           Positioned(
             top: 150,
@@ -38,7 +36,19 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
               ),
             ),
           ),
-
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            child: Center(
+              child: IconButton(
+                icon: const Icon(Icons.home, color: Colors.white, size: 45),
+                onPressed: () {
+                  Navigator.pushNamed(context, "/HomePage");
+                },
+              ),
+            ),
+          ),
         ],
       ),
     );
