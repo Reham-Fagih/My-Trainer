@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: "/WorkoutPlanPage",
+      initialRoute: "/",
       routes: {
         "/": (context) => const Welcome(),
         "/nutrition": (context) => const ActivityLevelPage(),
