@@ -7,6 +7,7 @@ import 'views/nutrition_page.dart';
 import 'views/welcome.dart';
 import 'views/sign_up.dart';
 import 'views/upload_screen.dart';
+import 'views/workout_plan.dart';
 
 void main() {
   runApp(const MyApp());
@@ -19,13 +20,14 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: "/",
+      initialRoute: "/WorkoutPlanPage",
       routes: {
         "/": (context) => const Welcome(),
         "/nutrition": (context) => const ActivityLevelPage(),
         "/nutritionGoal": (context) => const NutritionGoalPage(),
         "/WorkoutPlacePage": (context) => const WorkoutPlacePage(),
         "/WorkoutDurationPage": (context) => const WorkoutDurationPage(),
+        "/WorkoutPlanPage": (context) => const WorkoutPlanPage(),
         "/welcome": (context) => const Welcome(), //Logout
         "/SignUpPage": (context) => const SignUpPage(),
         "/LogInPage": (context) => const LogInPage(),
