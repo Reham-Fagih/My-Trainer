@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'nutrition_page.dart';
 
 class NutritionGoalPage extends StatelessWidget {
-  const NutritionGoalPage({super.key});
+  final String activityLevel;
+  const NutritionGoalPage({super.key, required this.activityLevel});
 
   @override
   Widget build(BuildContext context) {

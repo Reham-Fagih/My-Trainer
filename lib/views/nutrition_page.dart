@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'nutrition_goal.dart'; // استيراد صفحة nutrition_goal.dart
+import 'nutrition_goal.dart';
 
 class ActivityLevelPage extends StatefulWidget {
   const ActivityLevelPage({super.key});
@@ -39,7 +39,7 @@ class _ActivityLevelPageState extends State<ActivityLevelPage> {
                 child: IconButton(
                   icon: const Icon(Icons.arrow_back, color: Colors.black),
                   onPressed: () {
-                    // حالياً بدون انتقال
+                    Navigator.pushNamed(context, "/HomePage");
                   },
                 ),
               ),
@@ -77,7 +77,7 @@ class _ActivityLevelPageState extends State<ActivityLevelPage> {
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Container(
                   decoration: BoxDecoration(
-                    color: const Color(0xFF05262F),
+                    color: const Color.fromARGB(255, 52, 147, 142),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: [
                       BoxShadow(
@@ -104,13 +104,13 @@ class _ActivityLevelPageState extends State<ActivityLevelPage> {
                       setState(() {
                         selectedActivity = value;
                       });
-
-                      // الانتقال لصفحة NutritionGoalPage
                       if (value != null) {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const NutritionGoalPage(),
+                            builder: (context) => NutritionGoalPage(
+                              activityLevel: value!,
+                            ),
                           ),
                         );
                       }
