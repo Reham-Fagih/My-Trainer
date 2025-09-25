@@ -12,10 +12,6 @@ const model = "openai/gpt-4o-mini";
 router.post("/", async (req, res) => {
   const { environment, duration, weight, height, bodyFat } = req.body;
 
-  if (!environment || !duration || !weight || !height || !bodyFat) {
-    return res.status(400).json({ error: "Missing required fields" });
-  }
-
   try {
     const client = new OpenAI({ apiKey: GITHUB_TOKEN, baseURL: endpoint });
 

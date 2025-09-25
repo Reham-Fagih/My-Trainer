@@ -23,6 +23,8 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
+app.use("/api/mealplan", validateMealplan, mealPlanRouter);
+app.use("/api/workoutplan", validateWorkout, workoutPlanRouter);
 app.use("/", authRoutes);
 app.use("/", predictRoutes);
 app.use("/api/mealplan", mealPlanRoutes);
