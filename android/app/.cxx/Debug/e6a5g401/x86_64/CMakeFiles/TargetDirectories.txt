@@ -1,2 +1,0 @@
-C:/Users/eitha/StudioProjects/Senior-Project/android/app/.cxx/Debug/e6a5g401/x86_64/CMakeFiles/edit_cache.dir
-C:/Users/eitha/StudioProjects/Senior-Project/android/app/.cxx/Debug/e6a5g401/x86_64/CMakeFiles/rebuild_cache.dir

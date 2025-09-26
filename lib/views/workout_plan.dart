@@ -13,14 +13,12 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     return Scaffold(
       body: Stack(
         children: [
-
           Positioned.fill(
             child: Image.asset(
               'assets/images/WorkoutpageBackground.png',
               fit: BoxFit.cover,
             ),
           ),
-
           Positioned(
             top: 150,
             left: 30,

@@ -1,5 +1,5 @@
 # -----------------------------
-# Flutter/Dart
+# Flutter / Dart
 .dart_tool/
 .packages
 .pub/
@@ -11,6 +11,12 @@ build/
 .flutter-plugins-dependencies
 ios/Flutter/Generated.xcconfig
 ios/Pods/
+ios/.symlinks/
+macos/Pods/
+macos/.symlinks/
+windows/flutter/
+linux/flutter/
+android/app/.cxx/
 app.*.symbols
 app.*.map.json
 flutter_export_environment.sh
@@ -24,7 +30,6 @@ node_modules/
 npm-debug.log*
 yarn-error.log*
 dist/
-build/
 .env
 package-lock.json
 
@@ -58,8 +63,6 @@ venv/
 *.swp
 *.DS_Store
 .atom/
-.build/
-.buildlog/
 .history/
 .migrate_working_dir/
 
@@ -67,4 +70,7 @@ venv/
 # OS specific
 Thumbs.db
 desktop.ini
+
+# -----------------------------
+# Others
 .env

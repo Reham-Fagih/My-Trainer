@@ -26,7 +26,7 @@ class MyApp extends StatelessWidget {
       routes: {
         "/": (context) => const Welcome(),
         "/nutrition": (context) => const ActivityLevelPage(),
-        "/nutritionGoal": (context) => const NutritionGoalPage(),
+        "/nutritionGoal": (context) => const NutritionGoalPage(activityLevel: '',),
         "/WorkoutPlacePage": (context) => const WorkoutPlacePage(),
         "/WorkoutDurationPage": (context) => const WorkoutDurationPage(),
         "/WorkoutPlanPage": (context) => const WorkoutPlanPage(),

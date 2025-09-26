@@ -88,7 +88,7 @@ class _ActivityLevelPageState extends State<ActivityLevelPage> {
                     ],
                   ),
                   child: DropdownButtonFormField<String>(
-                    value: selectedActivity,
+                    initialValue: selectedActivity,
                     items: activityLevels
                         .map(
                           (level) => DropdownMenuItem(
@@ -109,7 +109,7 @@ class _ActivityLevelPageState extends State<ActivityLevelPage> {
                           context,
                           MaterialPageRoute(
                             builder: (context) => NutritionGoalPage(
-                              activityLevel: value!,
+                              activityLevel: value,
                             ),
                           ),
                         );
