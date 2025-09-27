@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'nutrition_page.dart';
+import 'nutrition_plan.dart';
 
 class NutritionGoalPage extends StatelessWidget {
   final String activityLevel;
@@ -70,7 +71,17 @@ class NutritionGoalPage extends StatelessWidget {
                   children: [
                     // Lose Weight
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NutritionPlanPage(
+                              activityLevel: activityLevel,
+                              goal: "Lose Weight",
+                            ),
+                          ),
+                        );
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             vertical: 20, horizontal: 20),
@@ -101,7 +112,17 @@ class NutritionGoalPage extends StatelessWidget {
 
                     // Maintain Weight
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NutritionPlanPage(
+                              activityLevel: activityLevel,
+                              goal: "Maintain Weight",
+                            ),
+                          ),
+                        );
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             vertical: 20, horizontal: 20),
@@ -127,7 +148,17 @@ class NutritionGoalPage extends StatelessWidget {
 
                     // Gain Weight
                     GestureDetector(
-                      onTap: () {},
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => NutritionPlanPage(
+                              activityLevel: activityLevel,
+                              goal: "Gain Weight",
+                            ),
+                          ),
+                        );
+                      },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                             vertical: 20, horizontal: 20),
