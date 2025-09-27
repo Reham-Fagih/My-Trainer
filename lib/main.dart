@@ -34,7 +34,7 @@ class MyApp extends StatelessWidget {
         "/SignUpPage": (context) => const SignUpPage(),
         "/LogInPage": (context) => const LogInPage(),
         "/ProfilePage": (context) => const ProfilePage(),
-        "/HomePage": (context) => const HomePage(),
+        "/HomePage": (context) =>  HomePage(),
         "/UploadPage": (context) => const UploadScreen(
               baseUrl:
                   "http://10.0.2.2:5000", // adjust if your backend is different
