@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'nutrition_page.dart';
+import 'nutrition_plan.dart';
 
 class NutritionGoalPage extends StatelessWidget {
   final String activityLevel;
