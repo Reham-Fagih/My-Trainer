@@ -88,7 +88,7 @@ class _ActivityLevelPageState extends State<ActivityLevelPage> {
                     ],
                   ),
                   child: DropdownButtonFormField<String>(
-                    initialValue: selectedActivity,
+                    value: selectedActivity,
                     items: activityLevels
                         .map(
                           (level) => DropdownMenuItem(

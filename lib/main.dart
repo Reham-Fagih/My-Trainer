@@ -26,7 +26,9 @@ class MyApp extends StatelessWidget {
       routes: {
         "/": (context) => const Welcome(),
         "/nutrition": (context) => const ActivityLevelPage(),
-        "/nutritionGoal": (context) => const NutritionGoalPage(activityLevel: '',),
+        "/nutritionGoal": (context) => const NutritionGoalPage(
+              activityLevel: '',
+            ),
         "/WorkoutPlacePage": (context) => const WorkoutPlacePage(),
         "/WorkoutDurationPage": (context) => const WorkoutDurationPage(),
         "/WorkoutPlanPage": (context) => const WorkoutPlanPage(),
@@ -40,8 +42,6 @@ class MyApp extends StatelessWidget {
                   "http://10.0.2.2:5000", // adjust if your backend is different
               userId: "temp", // replace with real userId after login
             ),
-
-
       },
     );
   }
