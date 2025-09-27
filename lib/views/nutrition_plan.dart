@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'nutrition_goal.dart';
 import 'home.dart';
+import 'nutrition_page.dart';
 
 class NutritionPlanPage extends StatefulWidget {
   final String activityLevel;

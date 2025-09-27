@@ -8,7 +8,10 @@ import authRoutes from "./routes/authRoutes.js";
 import predictRoutes from "./routes/predictRoutes.js";
 import mealPlanRoutes from "./routes/mealPlanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
-
+import {
+  validateMealplan,
+  validateWorkout,
+} from "./middleware/validateFields.js";
 const app = express();
 app.use(cors());
 app.use(express.json());
@@ -23,13 +26,12 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-app.use("/api/mealplan", validateMealplan, mealPlanRouter);
-app.use("/api/workoutplan", validateWorkout, workoutPlanRouter);
 app.use("/", authRoutes);
 app.use("/", predictRoutes);
 app.use("/api/mealplan", mealPlanRoutes);
 app.use("/api/workoutplan", workoutPlanRoutes);
-
+app.use("/api/mealplan", validateMealplan, mealPlanRoutes);
+app.use("/api/workoutplan", validateWorkout, workoutPlanRoutes);
 app.get("/ping", (req, res) => res.send("pong"));
 
 const PORT = process.env.PORT || 5000;

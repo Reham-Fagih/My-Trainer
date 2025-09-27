@@ -22,21 +22,19 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
-      initialRoute: "/",
+      initialRoute: "/HomePage",
       routes: {
         "/": (context) => const Welcome(),
         "/nutrition": (context) => const ActivityLevelPage(),
         "/nutritionGoal": (context) => const NutritionGoalPage(
               activityLevel: '',
             ),
-        "/WorkoutPlacePage": (context) => const WorkoutPlacePage(),
         "/WorkoutDurationPage": (context) => const WorkoutDurationPage(),
-        "/WorkoutPlanPage": (context) => const WorkoutPlanPage(),
         "/welcome": (context) => const Welcome(), //Logout
         "/SignUpPage": (context) => const SignUpPage(),
         "/LogInPage": (context) => const LogInPage(),
         "/ProfilePage": (context) => const ProfilePage(),
-        "/HomePage": (context) =>  HomePage(),
+        "/HomePage": (context) => HomePage(),
         "/UploadPage": (context) => const UploadScreen(
               baseUrl:
                   "http://10.0.2.2:5000", // adjust if your backend is different

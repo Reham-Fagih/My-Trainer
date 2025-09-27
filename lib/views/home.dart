@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'nutrition_page.dart';
-import 'workout_plan.dart';
+import 'workout_duration.dart';
 import 'profile.dart';
 import 'upload_screen.dart';
 import 'leader_board.dart';
@@ -26,7 +26,6 @@ class HomePage extends StatelessWidget {
         child: Column(
           children: [
             Spacer(),
-
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: SizedBox(
@@ -47,7 +46,7 @@ class HomePage extends StatelessWidget {
                       context,
                       'Workout',
                       'assets/images/Workout.png',
-                      WorkoutPlanPage(),
+                      WorkoutDurationPage(),
                     ),
                     buildMenuItem(
                       context,
@@ -65,12 +64,10 @@ class HomePage extends StatelessWidget {
                 ),
               ),
             ),
-
             Spacer(),
           ],
         ),
       ),
-
 
       // // nav bar
       // bottomNavigationBar: BottomAppBar(
@@ -151,7 +148,7 @@ class HomePage extends StatelessWidget {
                   MaterialPageRoute(
                     builder: (context) => UploadScreen(
                       baseUrl: 'https://api.com', // temp
-                      userId: 'temp',             // temp
+                      userId: 'temp', // temp
                     ),
                   ),
                 );
@@ -190,11 +187,11 @@ class HomePage extends StatelessWidget {
           ],
         ),
       ),
-
     );
   }
 
-  Widget buildMenuItem(BuildContext context, String label, String iconPath, Widget destinationPage) {
+  Widget buildMenuItem(BuildContext context, String label, String iconPath,
+      Widget destinationPage) {
     return GestureDetector(
       onTap: () {
         Navigator.push(
