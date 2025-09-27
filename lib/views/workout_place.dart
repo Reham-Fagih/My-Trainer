@@ -1,34 +1,26 @@
 import 'package:flutter/material.dart';
-// NOT FINISHED YET
+import 'workout_plan.dart';
+
 class WorkoutPlacePage extends StatelessWidget {
-  const WorkoutPlacePage({super.key});
+  final int selectedDuration;
+  const WorkoutPlacePage({super.key, required this.selectedDuration});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
         children: [
-
           Positioned.fill(
-            child: Image.asset(
-              'assets/images/WorkoutpageBackground.png',
-              fit: BoxFit.cover,
-            ),
+            child: Image.asset('assets/images/WorkoutpageBackground.png', fit: BoxFit.cover),
           ),
           Positioned(
             top: 150,
             left: 30,
             right: 30,
-            child: Container(
-              child: const Center(
-                child: Text(
-                  "Workout From",
-                  style: TextStyle(
-                    fontSize: 35,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF004754),
-                  ),
-                ),
+            child: const Center(
+              child: Text(
+                "Workout From",
+                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF004754)),
               ),
             ),
           ),
@@ -37,24 +29,37 @@ class WorkoutPlacePage extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  // send the selected to backend
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WorkoutPlanPage(
+                        selectedEnvironment: 'home',
+                        selectedDuration: selectedDuration,
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
-                  margin: const EdgeInsets.only(top: 100.0),
+                  margin: const EdgeInsets.only(top: 100),
                   height: 200,
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage("assets/images/Home.png"),
-
                     ),
                   ),
-
                 ),
-
               ),
               GestureDetector(
                 onTap: () {
-                  // send the selected to backend
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => WorkoutPlanPage(
+                        selectedEnvironment: 'gym',
+                        selectedDuration: selectedDuration,
+                      ),
+                    ),
+                  );
                 },
                 child: Container(
                   height: 250,
@@ -62,7 +67,6 @@ class WorkoutPlacePage extends StatelessWidget {
                   decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage("assets/images/GYM.png"),
-
                     ),
                   ),
                 ),
@@ -74,3 +78,4 @@ class WorkoutPlacePage extends StatelessWidget {
     );
   }
 }
+
