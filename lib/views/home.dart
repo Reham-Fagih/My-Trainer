@@ -1,11 +1,75 @@
 import 'package:flutter/material.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+import 'nutrition_page.dart';
+import 'workout_plan.dart';
+import 'profile.dart';
+import 'upload_screen.dart';
+import 'leader_board.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
+class HomePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      extendBody: true,
+      backgroundColor: Colors.transparent,
+
+      body: Container(
+        width: double.infinity,
+        height: double.infinity,
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage('assets/images/mainBackground.png'),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Column(
+          children: [
+            Spacer(),
+
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: SizedBox(
+                height: MediaQuery.of(context).size.height * 0.5,
+                child: GridView.count(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 20,
+                  mainAxisSpacing: 20,
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [
+                    buildMenuItem(
+                      context,
+                      'Nutrition',
+                      'assets/images/Nutrition.png',
+                      ActivityLevelPage(),
+                    ),
+                    buildMenuItem(
+                      context,
+                      'Workout',
+                      'assets/images/Workout.png',
+                      WorkoutPlanPage(),
+                    ),
+                    buildMenuItem(
+                      context,
+                      'Leaderboard',
+                      'assets/images/Leaderboard.png',
+                      const LeaderBoardPage(),
+                    ),
+                    buildMenuItem(
+                      context,
+                      'Points',
+                      'assets/images/Points.png',
+                      const LeaderBoardPage(),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+
+            Spacer(),
+          ],
+        ),
+      ),
 
 
       // // nav bar
