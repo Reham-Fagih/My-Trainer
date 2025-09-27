@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter/material.dart';
-
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
 
@@ -55,6 +53,31 @@ class Welcome extends StatelessWidget {
                     ),
                     child: Text(
                       "Sign Up",
+                      style: TextStyle(
+                        fontSize: 30,
+                        color: Color(0xFF2A4F53),
+                      ),
+                    ),
+                  ),
+                ),
+
+                // Continue as Guest temp
+                SizedBox(height: 60),
+                SizedBox(
+                  width: 300,
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.pushNamed(context, "/HomePage");
+                    },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: EdgeInsets.symmetric(vertical: 15),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(25),
+                      ),
+                    ),
+                    child: Text(
+                      "Continue as Guest",
                       style: TextStyle(
                         fontSize: 30,
                         color: Color(0xFF2A4F53),
