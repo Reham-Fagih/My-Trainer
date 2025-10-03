@@ -174,16 +174,14 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             children: meals.map<Widget>((meal) {
-              final mealCalories = (meal["items"] as List)
-                  .fold<int>(0, (sum, item) => sum + (item["calories"] as int));
               return _buildMealCard(
-                kcal: "$mealCalories kcal",
                 title: meal["meal"],
-                icon: Icons.restaurant_menu,
+                items: meal["items"],
               );
             }).toList(),
           ),
         ),
+
         // Home button
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
@@ -223,10 +221,12 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   }
 
   Widget _buildMealCard({
-    required String kcal,
     required String title,
-    required IconData icon,
+    required List items,
   }) {
+    final totalCalories =
+        items.fold<int>(0, (sum, item) => sum + (item["calories"] as int));
+
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
       padding: const EdgeInsets.all(16),
@@ -241,18 +241,12 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           ),
         ],
       ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            kcal,
-            style: const TextStyle(
-              fontSize: 16,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF05262F),
-            ),
-          ),
+          // عنوان الوجبة + مجموع السعرات
           Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
                 title,
@@ -262,9 +256,40 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
                   color: Color(0xFF2A4F53),
                 ),
               ),
-              const SizedBox(width: 8),
-              Icon(icon, color: Colors.black54),
+              Text(
+                "$totalCalories kcal",
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF05262F),
+                ),
+              ),
             ],
+          ),
+          const SizedBox(height: 10),
+          // تفاصيل الأطعمة داخل الوجبة
+          Column(
+            children: items.map<Widget>((item) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 4),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(item["food"],
+                        style: const TextStyle(
+                            fontSize: 14, fontWeight: FontWeight.w500)),
+                    Text(
+                      "${item["calories"]} Cal | "
+                      "P:${item["protein"]}g "
+                      "C:${item["carbohydrates"]}g "
+                      "F:${item["fat"]}g",
+                      style:
+                          const TextStyle(fontSize: 13, color: Colors.black54),
+                    ),
+                  ],
+                ),
+              );
+            }).toList(),
           ),
         ],
       ),
