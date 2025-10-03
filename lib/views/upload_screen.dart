@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:flutter_first_project/views/results.dart';
 import 'package:image_picker/image_picker.dart';
 import '../controllers/prediction_controller.dart';
 import '../services/api_service.dart';
@@ -51,6 +52,16 @@ class _UploadScreenState extends State<UploadScreen> {
       setState(() {
         _bfPercent = response.bfPercent;
       });
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (context) => ResultsPage(
+            bodyFatPercentage: _bfPercent!,
+            imagePath: _selectedImage!.path,
+          ),
+        ),
+      );
+
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Error: $e")));
