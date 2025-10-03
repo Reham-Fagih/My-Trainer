@@ -78,40 +78,71 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
             left: 30,
             right: 30,
             bottom: 80,
-            child: isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : errorMessage != null
-                ? Center(
-              child: Text(
-                errorMessage!,
-                style:
-                const TextStyle(color: Colors.red, fontSize: 18),
-              ),
-            )
-                : ListView.builder(
-              itemCount: workoutPlan?.weeklyPlans.length ?? 0,
-              itemBuilder: (context, index) {
-                final dayPlan = workoutPlan!.weeklyPlans[index];
-                return Card(
-                  margin: const EdgeInsets.symmetric(
-                      vertical: 8, horizontal: 16),
-                  child: ExpansionTile(
-                    title: Text(dayPlan.day),
-                    children: dayPlan.exercises.map((exercise) {
-                      final repsOrDuration = exercise.reps != null
-                          ? 'Reps: ${exercise.reps}'
-                          : 'Duration: ${exercise.duration}';
-                      return ListTile(
-                        title: Text(exercise.name),
-                        subtitle: Text(
-                            'Sets: ${exercise.sets}, $repsOrDuration'),
-                      );
-                    }).toList(),
+            child: Padding(
+              padding: const EdgeInsets.all(16.0), // padding around content
+              child: isLoading
+                  ? const Center(
+                child: CircularProgressIndicator(
+                  color: Colors.blue, // spinner color
+                ),
+              )
+                  : errorMessage != null
+                  ? Center(
+                child: Text(
+                  errorMessage!,
+                  style: const TextStyle(
+                    color: Colors.red,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
                   ),
-                );
-              },
+                  textAlign: TextAlign.center,
+                ),
+              )
+                  : ListView.builder(
+                itemCount: workoutPlan?.weeklyPlans.length ?? 0,
+                itemBuilder: (context, index) {
+                  final dayPlan = workoutPlan!.weeklyPlans[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
+                    child: ExpansionTile(
+                      title: Text(
+                        dayPlan.day,
+                        style: const TextStyle(
+                          color: Color(0xFF004754),
+                          fontSize: 18,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      children: dayPlan.exercises.map((exercise) {
+                        final repsOrDuration = exercise.reps != null
+                            ? 'Reps: ${exercise.reps}'
+                            : 'Duration: ${exercise.duration}';
+                        return ListTile(
+                          title: Text(
+                            exercise.name,
+                            style: const TextStyle(
+                              color: Colors.black, // exercise name color
+                              fontSize: 16,        // exercise name size
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                          subtitle: Text(
+                            'Sets: ${exercise.sets}, $repsOrDuration',
+                            style: const TextStyle(
+                              color: Colors.grey,  // subtitle color
+                              fontSize: 14,         // subtitle size
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
+
+
           Positioned(
             bottom: 20,
             left: 0,
