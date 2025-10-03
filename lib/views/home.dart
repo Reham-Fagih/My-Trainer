@@ -147,8 +147,8 @@ class HomePage extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder: (context) => UploadScreen(
-                      baseUrl: 'https://api.com', // temp
-                      userId: 'temp', // temp
+                      baseUrl: "http://10.0.2.2:500:5000", //API
+                      userId: '12345', // temp
                     ),
                   ),
                 );
