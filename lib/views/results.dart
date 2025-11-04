@@ -44,8 +44,8 @@ class _ResultsPageState extends State<ResultsPage>
 
     _progressAnimation =
         Tween<double>(begin: 0.0, end: widget.bodyFatPercentage / 100).animate(
-          CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
-        );
+      CurvedAnimation(parent: _progressController, curve: Curves.easeInOut),
+    );
 
     // بدء الأنيميشن
     Future.delayed(const Duration(milliseconds: 500), () {
@@ -159,7 +159,6 @@ class _ResultsPageState extends State<ResultsPage>
       mainAxisSize: MainAxisSize.max,
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.13),
-
         const Text(
           'Results',
           style: TextStyle(
@@ -168,7 +167,6 @@ class _ResultsPageState extends State<ResultsPage>
             fontWeight: FontWeight.w600,
           ),
         ),
-
         SizedBox(height: 30),
         SizedBox(
           width: 200,
@@ -181,7 +179,6 @@ class _ResultsPageState extends State<ResultsPage>
                 builder: (context, child) {
                   return CustomPaint(
                     size: const Size(200, 200),
-
                     painter: CircularProgressPainter(
                       progress: _progressAnimation.value,
                       color: _getResultColor(),
