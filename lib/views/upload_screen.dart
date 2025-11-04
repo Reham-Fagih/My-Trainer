@@ -61,7 +61,6 @@ class _UploadScreenState extends State<UploadScreen> {
           ),
         ),
       );
-
     } catch (e) {
       ScaffoldMessenger.of(context)
           .showSnackBar(SnackBar(content: Text("Error: $e")));
@@ -119,40 +118,42 @@ class _UploadScreenState extends State<UploadScreen> {
 
             // Upload & Predict Button
             if (_selectedImage != null)
-            Padding(
-              padding: const EdgeInsets.all(30.0),
-              child: ElevatedButton.icon(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.blueGrey,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15),
+              Padding(
+                padding: const EdgeInsets.all(30.0),
+                child: ElevatedButton.icon(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blueGrey,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    elevation: 2,
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 40, vertical: 15),
                   ),
-                  elevation: 2,
-                  padding: const EdgeInsets.symmetric(horizontal: 40, vertical: 15),
-                ),
-                icon: _loading
-                    ? const SizedBox(
-                        height: 16,
-                        width: 16,
-                        child: CircularProgressIndicator(
+                  icon: _loading
+                      ? const SizedBox(
+                          height: 16,
+                          width: 16,
+                          child: CircularProgressIndicator(
+                            color: Colors.white,
+                            strokeWidth: 2,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.cloud_upload,
                           color: Colors.white,
-                          strokeWidth: 2,
+                          size: 30,
                         ),
-                      )
-                    : const Icon(Icons.cloud_upload,color: Colors.white,size: 30,),
-
-                label: Text(
-
-                  _loading ? "Uploading" : "Predict",
-                  style: const TextStyle(
-                    fontSize:20,
-                    color: Colors.white,
-
+                  label: Text(
+                    _loading ? "Uploading" : "Predict",
+                    style: const TextStyle(
+                      fontSize: 20,
+                      color: Colors.white,
+                    ),
                   ),
+                  onPressed: _loading ? null : uploadAndPredict,
                 ),
-                onPressed: _loading ? null : uploadAndPredict,
               ),
-            ),
           ],
         ),
       ),

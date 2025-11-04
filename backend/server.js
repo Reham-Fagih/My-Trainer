@@ -8,6 +8,8 @@ import authRoutes from "./routes/authRoutes.js";
 import predictRoutes from "./routes/predictRoutes.js";
 import mealPlanRoutes from "./routes/mealPlanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
+import userRoutes from "./routes/userRoutes.js";
+app.use("/api", userRoutes);
 import {
   validateMealplan,
   validateWorkout,
