@@ -1,9 +1,9 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 import 'nutrition_goal.dart';
 import 'home.dart';
-import 'nutrition_page.dart';
 
 class NutritionPlanPage extends StatefulWidget {
   final String activityLevel;
@@ -30,6 +30,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
     _loadMealPlan();
   }
 
+  //Load Meal Plan from AI Server
   Future<void> _loadMealPlan() async {
     try {
       final uri = Uri.parse("http://10.0.2.2:5000/api/mealplan");
@@ -61,6 +62,42 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
         errorMessage = e.toString();
         isLoading = false;
       });
+    }
+  }
+
+  // Save Meal Plan to MongoDB
+  Future<void> saveNutritionPlan() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userEmail = prefs.getString('userEmail') ?? "";
+    final authToken = prefs.getString('authToken') ?? "";
+
+    if (userEmail.isEmpty || mealPlan == null) return;
+
+    final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail/nutrition");
+
+    try {
+      final response = await http.post(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $authToken",
+        },
+        body: jsonEncode(mealPlan),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Nutrition plan saved successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to save plan: ${response.body}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
     }
   }
 
@@ -110,6 +147,8 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
         ),
 
         const SizedBox(height: 10),
+
+        // Info Box
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.all(16),
@@ -140,6 +179,8 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
             ],
           ),
         ),
+
+        // Calories Box
         Container(
           padding: const EdgeInsets.all(12),
           decoration: BoxDecoration(
@@ -157,6 +198,8 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
         ),
 
         const SizedBox(height: 20),
+
+        // Macros
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -169,7 +212,26 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           ],
         ),
 
-        const SizedBox(height: 30),
+        const SizedBox(height: 20),
+
+        // Save Plan Button
+        Center(
+          child: ElevatedButton(
+            onPressed: saveNutritionPlan,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF04383D),
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+            ),
+            child: const Text(
+              "Save Plan",
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 20),
+
+        // Meal Cards
         Expanded(
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -244,7 +306,6 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // عنوان الوجبة + مجموع السعرات
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -267,7 +328,6 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
             ],
           ),
           const SizedBox(height: 10),
-          // تفاصيل الأطعمة داخل الوجبة
           Column(
             children: items.map<Widget>((item) {
               return Padding(
