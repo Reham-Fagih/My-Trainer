@@ -23,13 +23,15 @@ class _ProfilePageState extends State<ProfilePage> {
   String? userEmail;
   String? authToken;
 
+  double? bfPercent;
+
   @override
   void initState() {
     super.initState();
     loadUserInfo();
   }
 
-  // 🟢 تحميل الإيميل والتوكن من SharedPreferences
+  // SharedPreferences
   Future<void> loadUserInfo() async {
     final prefs = await SharedPreferences.getInstance();
     userEmail = prefs.getString('userEmail');
@@ -43,7 +45,6 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // 🟩 جلب بيانات المستخدم من السيرفر
   Future<void> fetchUserData() async {
     try {
       final response = await http.get(
@@ -63,6 +64,12 @@ class _ProfilePageState extends State<ProfilePage> {
           ageController.text = data["age"]?.toString() ?? "";
           weightController.text = data["weight"]?.toString() ?? "";
           heightController.text = data["height"]?.toString() ?? "";
+
+          bfPercent = data["predictions"] != null &&
+                  data["predictions"].isNotEmpty
+              ? double.tryParse(data["predictions"].last["value"].toString())
+              : null;
+
           isLoading = false;
         });
       } else {
@@ -70,12 +77,11 @@ class _ProfilePageState extends State<ProfilePage> {
         setState(() => isLoading = false);
       }
     } catch (e) {
-      print("❌ Error fetching user data: $e");
+      print("Error fetching user data: $e");
       setState(() => isLoading = false);
     }
   }
 
-  // 🟨 تحديث بيانات المستخدم في السيرفر
   Future<void> updateUserData() async {
     try {
       final response = await http.put(
@@ -96,15 +102,15 @@ class _ProfilePageState extends State<ProfilePage> {
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("✅ Profile updated successfully")),
+          const SnackBar(content: Text("Profile updated successfully")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("⚠️ Failed to update profile")),
+          const SnackBar(content: Text("Failed to update profile")),
         );
       }
     } catch (e) {
-      print("❌ Error updating user: $e");
+      print("Error updating user: $e");
     }
   }
 
@@ -112,8 +118,6 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
-      // 🟦 الهيدر
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -130,7 +134,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                   ),
 
-                  // 🟩 صندوق تعديل البروفايل
                   Padding(
                     padding: const EdgeInsets.symmetric(
                         horizontal: 20, vertical: 10),
@@ -149,8 +152,17 @@ class _ProfilePageState extends State<ProfilePage> {
                             child: CircleAvatar(
                               radius: 30,
                               backgroundColor: Colors.white,
-                              child: Icon(Icons.person,
-                                  size: 40, color: Colors.grey[700]),
+                              child: bfPercent == null
+                                  ? Icon(Icons.percent,
+                                      size: 40, color: Colors.grey[700])
+                                  : Text(
+                                      "${bfPercent!.toStringAsFixed(1)}%",
+                                      style: const TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.bold,
+                                        color: Colors.black,
+                                      ),
+                                    ),
                             ),
                           ),
                           const SizedBox(height: 10),
@@ -193,8 +205,6 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-
-      // 🟣 الفوتر (ناف بار)
       bottomNavigationBar: Container(
         height: 90,
         decoration: const BoxDecoration(
@@ -262,7 +272,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // 🔹 الحقول الكبيرة
   Widget _textField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15),
@@ -287,7 +296,6 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // 🔹 الحقول الصغيرة (Age, Weight, Height)
   Widget _smallField(String label, TextEditingController controller) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
