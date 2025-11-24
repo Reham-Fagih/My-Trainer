@@ -9,7 +9,6 @@ import predictRoutes from "./routes/predictRoutes.js";
 import mealPlanRoutes from "./routes/mealPlanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-import { validateMealplan } from "./middleware/validateFields.js";
 
 app.use("/api", userRoutes);
 import {
@@ -37,8 +36,6 @@ app.use("/api/workoutplan", workoutPlanRoutes);
 app.use("/api/mealplan", validateMealplan, mealPlanRoutes);
 app.use("/api/workoutplan", validateWorkout, workoutPlanRoutes);
 app.get("/ping", (req, res) => res.send("pong"));
-
-app.use("/api/user/:email/nutrition", validateMealplan);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));

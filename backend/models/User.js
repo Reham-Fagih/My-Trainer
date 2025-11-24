@@ -34,6 +34,25 @@ const nutritionPlanSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
+const workoutPlanSchema = new mongoose.Schema({
+  durationWeeks: { type: Number },
+  environment: { type: String },
+  weeklyPlans: [
+    {
+      day: { type: String },
+      exercises: [
+        {
+          name: { type: String },
+          sets: { type: Number },
+          reps: { type: Number },
+          duration: { type: String },
+        },
+      ],
+    },
+  ],
+  createdAt: { type: Date, default: Date.now },
+});
+
 const userSchema = new mongoose.Schema({
   name: { type: String, required: false },
   email: { type: String, required: true, unique: true },
@@ -45,6 +64,7 @@ const userSchema = new mongoose.Schema({
   gender: { type: String, enum: ["male", "female"], required: false },
   predictions: [predictionSchema],
   nutritionPlans: [nutritionPlanSchema],
+  workoutPlans: [workoutPlanSchema],
 }, { timestamps: true });
 
 export default mongoose.model("User", userSchema);

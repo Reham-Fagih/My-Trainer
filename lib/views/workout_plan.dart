@@ -1,6 +1,9 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../services/api_service.dart';
-import '../models/workout_plan_model.dart';
+import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
+
+import 'home.dart';
 
 class WorkoutPlanPage extends StatefulWidget {
   final String selectedEnvironment;
@@ -17,28 +20,40 @@ class WorkoutPlanPage extends StatefulWidget {
 }
 
 class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
-  WorkoutPlan? workoutPlan;
+  Map<String, dynamic>? workoutPlan;
   bool isLoading = true;
   String? errorMessage;
 
   @override
   void initState() {
     super.initState();
-    fetchPlan();
+    _loadWorkoutPlan();
   }
 
-  Future<void> fetchPlan() async {
-    final api = ApiService(baseUrl: 'http://10.0.2.2:5000');
-// collect the data and set status
+  // Load Workout Plan from AI server
+  Future<void> _loadWorkoutPlan() async {
     try {
-      final planJson = await api.fetchWorkoutPlan(
-        environment: widget.selectedEnvironment,
-        duration: widget.selectedDuration,
-      );
-      setState(() {
-        workoutPlan = WorkoutPlan.fromJson(planJson);
-        isLoading = false;
+      final uri = Uri.parse("http://10.0.2.2:5000/api/workoutplan");
+      final body = jsonEncode({
+        "environment": widget.selectedEnvironment,
+        "duration": widget.selectedDuration,
       });
+
+      final response = await http
+          .post(uri, headers: {'Content-Type': 'application/json'}, body: body)
+          .timeout(const Duration(seconds: 60));
+
+      if (response.statusCode == 200) {
+        setState(() {
+          workoutPlan = jsonDecode(response.body);
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage = "Failed: ${response.statusCode} ${response.body}";
+          isLoading = false;
+        });
+      }
     } catch (e) {
       setState(() {
         errorMessage = e.toString();
@@ -47,117 +62,135 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     }
   }
 
+  // Save Workout Plan to MongoDB
+  Future<void> saveWorkoutPlan() async {
+    final prefs = await SharedPreferences.getInstance();
+    final userEmail = prefs.getString('userEmail') ?? "";
+    final authToken = prefs.getString('authToken') ?? "";
+
+    if (userEmail.isEmpty || workoutPlan == null) return;
+
+    final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail/workout");
+
+    try {
+      final response = await http.post(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $authToken",
+        },
+        body: jsonEncode(workoutPlan),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Workout plan saved successfully!")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to save plan: ${response.body}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error: $e")),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: Image.asset(
-              'assets/images/WorkoutpageBackground.png',
-              fit: BoxFit.cover,
-            ),
+      body: Container(
+        decoration: const BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/WorkoutpageBackground.png"),
+            fit: BoxFit.cover,
           ),
-          Positioned(
-            top: 150,
-            left: 30,
-            right: 30,
-            child: Center(
-              child: Text(
-                "Your Workout Plan",
-                style: const TextStyle(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF004754),
-                ),
-              ),
-            ),
-          ),
-          Positioned(
-            top: 160,
-            left: 30,
-            right: 30,
-            bottom: 80,
-            child: Padding(
-              padding: const EdgeInsets.all(16.0), // padding around content
-              child: isLoading
-                  ? const Center(
-                child: CircularProgressIndicator(
-                  color: Colors.blue, // spinner color
-                ),
-              )
-                  : errorMessage != null
-                  ? Center(
-                child: Text(
-                  errorMessage!,
-                  style: const TextStyle(
-                    color: Colors.red,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              )
-                  : ListView.builder(
-                itemCount: workoutPlan?.weeklyPlans.length ?? 0,
-                itemBuilder: (context, index) {
-                  final dayPlan = workoutPlan!.weeklyPlans[index];
-                  return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 5),
-                    child: ExpansionTile(
-                      title: Text(
-                        dayPlan.day,
-                        style: const TextStyle(
-                          color: Color(0xFF004754),
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      children: dayPlan.exercises.map((exercise) {
-                        final repsOrDuration = exercise.reps != null
-                            ? 'Reps: ${exercise.reps}'
-                            : 'Duration: ${exercise.duration}';
-                        return ListTile(
-                          title: Text(
-                            exercise.name,
-                            style: const TextStyle(
-                              color: Colors.black, // exercise name color
-                              fontSize: 16,        // exercise name size
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          subtitle: Text(
-                            'Sets: ${exercise.sets}, $repsOrDuration',
-                            style: const TextStyle(
-                              color: Colors.grey,  // subtitle color
-                              fontSize: 14,         // subtitle size
-                            ),
-                          ),
-                        );
-                      }).toList(),
-                    ),
-                  );
-                },
-              ),
-            ),
-          ),
-
-
-          Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            child: Center(
-              child: IconButton(
-                icon: const Icon(Icons.home, color: Colors.white, size: 45),
-                onPressed: () {
-                  Navigator.pushNamed(context, "/HomePage");
-                },
-              ),
-            ),
-          ),
-        ],
+        ),
+        child: SafeArea(
+          child: isLoading
+              ? const Center(child: CircularProgressIndicator())
+              : errorMessage != null
+                  ? Center(child: Text("Error: $errorMessage"))
+                  : _buildContent(),
+        ),
       ),
+    );
+  }
+
+  Widget _buildContent() {
+    final weeklyPlans = workoutPlan?["weeklyPlans"] ?? [];
+
+    return Column(
+      children: [
+        // Home button
+        Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Align(
+            alignment: Alignment.topLeft,
+            child: IconButton(
+              icon: const Icon(Icons.home, color: Colors.white),
+              onPressed: () {
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (context) => HomePage()),
+                );
+              },
+            ),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // Save Button
+        ElevatedButton(
+          onPressed: saveWorkoutPlan,
+          style: ElevatedButton.styleFrom(
+            backgroundColor: const Color(0xFF04383D),
+            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+          ),
+          child: const Text(
+            "Save Plan",
+            style: TextStyle(fontSize: 18, color: Colors.white),
+          ),
+        ),
+
+        const SizedBox(height: 10),
+
+        // Workout Plan List
+        Expanded(
+          child: ListView.builder(
+            itemCount: weeklyPlans.length,
+            itemBuilder: (context, index) {
+              final dayPlan = weeklyPlans[index];
+              final exercises = dayPlan["exercises"] as List? ?? [];
+
+              return Card(
+                margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                child: ExpansionTile(
+                  title: Text(
+                    dayPlan["day"] ?? "Day",
+                    style: const TextStyle(
+                        fontSize: 18, fontWeight: FontWeight.bold),
+                  ),
+                  children: exercises.map<Widget>((exercise) {
+                    final repsOrDuration = exercise["reps"] != null
+                        ? 'Reps: ${exercise["reps"]}'
+                        : 'Duration: ${exercise["duration"]}';
+
+                    return ListTile(
+                      title: Text(exercise["name"] ?? ""),
+                      subtitle: Text(
+                          'Sets: ${exercise["sets"] ?? "-"}, $repsOrDuration'),
+                    );
+                  }).toList(),
+                ),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }

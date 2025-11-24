@@ -1,6 +1,8 @@
 import express from "express";
 import OpenAI from "openai";
 import dotenv from "dotenv";
+import authMiddleware from "../middleware/authMiddleware.js";
+import User from "../models/User.js";
 dotenv.config();
 
 const router = express.Router();
@@ -9,7 +11,8 @@ const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 const endpoint = "https://models.github.ai/inference";
 const model = "openai/gpt-4o-mini";
 
-router.post("/", async (req, res) => {
+router.post("/", authMiddleware, async (req, res) => {
+  const userId = req.user.id;
   const { weight, bodyFat, gender, activityLevel, goal } = req.body;
 
   try {
@@ -21,28 +24,20 @@ router.post("/", async (req, res) => {
         {
           role: "system",
           content: `
-You are a nutrition planner. Output the response as strict JSON only.
-- The top-level object must contain: calories (number), macros (object), mealPlans (array).
-- macros object contains: protein, carbohydrates, fats (all numbers in grams, no units).
-- mealPlans is an array of meals; each meal has:
-    - meal (string)
-    - items (array)
-        - each item has food (string), calories (number), protein (number), carbohydrates (number), fat (number)
-- Do NOT include any text outside the JSON.
-- Example response:
+You are a nutrition planner. Output strict JSON only:
 {
-  "calories": 2200,
-  "macros": { "protein": 150, "carbohydrates": 200, "fats": 70 },
+  "calories": number,
+  "macros": { "protein": number, "carbohydrates": number, "fats": number },
   "mealPlans": [
     {
-      "meal": "Breakfast",
+      "meal": "string",
       "items": [
-        { "food": "Scrambled eggs", "calories": 210, "protein": 18, "carbohydrates": 1, "fat": 15 }
+        { "food": "string", "calories": number, "protein": number, "carbohydrates": number, "fat": number }
       ]
     }
   ]
 }
-          `.trim(),
+`.trim(),
         },
         {
           role: "user",
@@ -58,15 +53,40 @@ You are a nutrition planner. Output the response as strict JSON only.
     });
 
     const output = response.choices[0].message.content;
+    const nutritionPlan = JSON.parse(output);
 
-    try {
-      const mealPlan = JSON.parse(output);
-      res.json(mealPlan);
-    } catch (e) {
-      res.status(500).json({ error: "Invalid JSON from model", raw: output });
-    }
+    const user = await User.findById(userId);
+    user.nutritionPlans.push({
+      activityLevel,
+      goal,
+      weight,
+      bodyFat,
+      gender,
+      calories: nutritionPlan.calories,
+      macros: nutritionPlan.macros,
+      mealPlans: nutritionPlan.mealPlans,
+    });
+
+    await user.save();
+
+    return res.status(201).json({
+      message: "✅ Nutrition plan saved successfully",
+      nutritionPlan,
+    });
   } catch (err) {
-    res.status(500).json({ error: err.message });
+    console.log("❌ Nutrition plan error:", err);
+    return res.status(500).json({ error: "Failed to generate nutrition plan" });
+  }
+});
+
+router.get("/", authMiddleware, async (req, res) => {
+  const userId = req.user.id;
+
+  try {
+    const user = await User.findById(userId);
+    return res.json(user.nutritionPlans);
+  } catch {
+    return res.status(500).json({ error: "Failed to fetch nutrition plans" });
   }
 });
 
