@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../services/auth.dart'; // make sure this path matches your folder structure
+import '../services/auth.dart';
 
 class SignUpPage extends StatefulWidget {
   const SignUpPage({super.key});
@@ -14,48 +14,76 @@ class _SignUpPageState extends State<SignUpPage> {
   final TextEditingController passwordController = TextEditingController();
 
   Future<void> submitForm() async {
-    String email = emailController.text.trim();
-    String phone = phoneController.text.trim();
-    String password = passwordController.text.trim();
+    print('submitForm called');
 
-    if (email.isEmpty || phone.isEmpty || password.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please fill all fields')),
-      );
-      return;
-    }
+    try {
+      String email = emailController.text.trim();
+      String phone = phoneController.text.trim();
+      String password = passwordController.text.trim();
 
-    if (!RegExp(r'^05\d{8}$').hasMatch(phone)) {
+      if (email.isEmpty || phone.isEmpty || password.isEmpty) {
+        ScaffoldMessenger.of(
+          context,
+        ).showSnackBar(const SnackBar(content: Text('Please fill all fields')));
+        return;
+      }
+
+      if (!RegExp(r'^\d{7,15}$').hasMatch(phone)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid phone number')),
+        );
+        return;
+      }
+
+      if (!RegExp(r'^.+@.+\..{2,}$').hasMatch(email)) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a valid email')),
+        );
+        return;
+      }
+
+      if (password.length < 6) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Password must be at least 6 characters'),
+          ),
+        );
+        return;
+      }
+
+      final authService = AuthService();
+
+      print('Calling AuthService.register with email=$email phone=$phone');
+
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-            content: Text('Phone number must start with 05 and be 10 digits')),
+          content: Text('Submitting...'),
+          duration: Duration(seconds: 1),
+        ),
       );
-      return;
-    }
 
-    if (!RegExp(r'^[\w\.-]+@([\w\-]+\.)+[A-Za-z]{2,4}$').hasMatch(email)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter a valid email')),
-      );
-      return;
-    }
+      final result = await authService.register(email, phone, password);
 
-    if (password.length < 6) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password must be at least 6 characters')),
-      );
-      return;
-    }
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(result)));
 
-    final authService = AuthService();
-    final result = await authService.register(email, phone, password);
+      if (result.contains("✅")) {
+        emailController.clear();
+        phoneController.clear();
+        passwordController.clear();
 
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(result)));
-
-    if (result.contains("✅")) {
-      emailController.clear();
-      phoneController.clear();
-      passwordController.clear();
+        await Future.delayed(const Duration(milliseconds: 350));
+        if (!mounted) return;
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil('/HomePage', (r) => false);
+      }
+    } catch (e, st) {
+      print('submitForm error: $e\n$st');
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('An error occurred: $e')));
     }
   }
 
@@ -91,8 +119,12 @@ class _SignUpPageState extends State<SignUpPage> {
                     const SizedBox(height: 20),
                     buildTextField(phoneController, 'Phone', Icons.phone),
                     const SizedBox(height: 20),
-                    buildTextField(passwordController, 'Password', Icons.lock,
-                        obscure: true),
+                    buildTextField(
+                      passwordController,
+                      'Password',
+                      Icons.lock,
+                      obscure: true,
+                    ),
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: submitForm,
@@ -101,7 +133,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         foregroundColor: Colors.white,
                       ),
                       child: const Text('Submit'),
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -113,8 +145,11 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Widget buildTextField(
-      TextEditingController controller, String hint, IconData icon,
-      {bool obscure = false}) {
+    TextEditingController controller,
+    String hint,
+    IconData icon, {
+    bool obscure = false,
+  }) {
     return SizedBox(
       width: 290,
       child: TextField(

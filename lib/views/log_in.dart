@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_first_project/services/forget_password.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
-import 'upload_screen.dart';
+import '../services/config.dart';
+import 'home.dart';
 
 class LogInPage extends StatefulWidget {
   const LogInPage({super.key});
@@ -28,7 +29,7 @@ class _LogInPageState extends State<LogInPage> {
       return;
     }
 
-    final host = "http://10.0.2.2:5000";
+    final host = baseUrl;
     final url = Uri.parse('$host/login');
 
     setState(() => _loading = true);
@@ -47,15 +48,11 @@ class _LogInPageState extends State<LogInPage> {
 
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("authToken", token);
+        await prefs.setString("userId", user["_id"] ?? '');
 
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(
-            builder: (context) => UploadScreen(
-              baseUrl: host,
-              userId: user["_id"],
-            ),
-          ),
+          MaterialPageRoute(builder: (context) => HomePage()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

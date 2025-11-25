@@ -6,6 +6,7 @@ import FormData from "form-data";
 import express from "express";
 import authMiddleware from "../middleware/auth.js";
 import User from "../models/User.js";
+import mongoose from "mongoose";
 
 const router = express.Router();
 
@@ -39,6 +40,12 @@ router.post(
 
     if (!userId) {
       return res.status(400).json({ error: "userId is required" });
+    }
+
+    // Validate that userId is a valid MongoDB ObjectId to avoid Mongoose
+    // Cast errors which currently surface as 500 server errors.
+    if (!mongoose.Types.ObjectId.isValid(userId)) {
+      return res.status(400).json({ error: "Invalid userId format" });
     }
 
     try {

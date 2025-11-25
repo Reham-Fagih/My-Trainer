@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -25,14 +26,32 @@ class ApiService {
       request.headers['Authorization'] = 'Bearer $token';
     }
 
-    final streamed = await request.send();
-    final response = await http.Response.fromStream(streamed);
+    try {
+      // Send the multipart request and apply a timeout so the UI doesn't hang
+      // indefinitely if the server or ML service is slow or unreachable.
+      final streamed =
+          await request.send().timeout(const Duration(seconds: 60));
 
-    if (response.statusCode == 200) {
-      return jsonDecode(response.body);
-    } else {
+      final response = await http.Response.fromStream(streamed).timeout(
+        const Duration(seconds: 30),
+      );
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body);
+      } else if (response.statusCode == 401) {
+        // Helpful error for missing/invalid token
+        throw Exception('Unauthorized (401): ${response.body}');
+      } else {
+        throw Exception(
+            'Prediction failed: ${response.statusCode} ${response.body}');
+      }
+    } on TimeoutException catch (_) {
       throw Exception(
-          'Prediction failed: ${response.statusCode} ${response.body}');
+          'Request timed out. The server may be busy or unreachable.');
+    } on SocketException catch (e) {
+      throw Exception('Network error while uploading image: ${e.message}');
+    } catch (e) {
+      rethrow;
     }
   }
 

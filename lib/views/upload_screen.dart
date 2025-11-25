@@ -5,12 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import '../controllers/prediction_controller.dart';
 import '../services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/config.dart';
 
 class UploadScreen extends StatefulWidget {
-  final String baseUrl;
-  final String userId;
-
-  const UploadScreen({super.key, required this.baseUrl, required this.userId});
+  const UploadScreen({super.key});
 
   @override
   State<UploadScreen> createState() => _UploadScreenState();
@@ -23,12 +21,20 @@ class _UploadScreenState extends State<UploadScreen> {
 
   final picker = ImagePicker();
   late PredictionController controller;
+  String? _userId;
 
   @override
   void initState() {
     super.initState();
-    controller =
-        PredictionController(apiService: ApiService(baseUrl: widget.baseUrl));
+    controller = PredictionController(apiService: ApiService(baseUrl: baseUrl));
+    _loadUserId();
+  }
+
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userId = prefs.getString('userId') ?? '';
+    });
   }
 
   Future<void> pickImage(ImageSource source) async {
@@ -46,8 +52,12 @@ class _UploadScreenState extends State<UploadScreen> {
     setState(() => _loading = true);
 
     try {
+      if (_userId == null || _userId!.isEmpty) {
+        throw Exception('Missing userId — please login again');
+      }
+
       final response =
-          await controller.predictFromImage(_selectedImage!, widget.userId);
+          await controller.predictFromImage(_selectedImage!, _userId!);
 
       setState(() {
         _bfPercent = response.bfPercent;
@@ -184,7 +194,7 @@ class _UploadScreenState extends State<UploadScreen> {
                 icon: const Icon(Icons.camera_alt_rounded,
                     color: Colors.white, size: 40),
                 onPressed: () {
-                  Navigator.pushNamed(context, "/UploadScreen");
+                  Navigator.pushNamed(context, "/UploadPage");
                 }),
             IconButton(
               icon: const Icon(Icons.logout, color: Colors.white, size: 40),

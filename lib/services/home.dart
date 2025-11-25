@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 
-import 'nutrition_page.dart';
-import 'workout_duration.dart';
-import 'profile.dart';
-import 'upload_screen.dart';
-import 'leader_board.dart';
+import '../views/nutrition_page.dart';
+import '../views/workout_duration.dart';
+import '../views/profile.dart';
+import '../views/upload_screen.dart';
+import '../views/leader_board.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/config.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -146,6 +147,9 @@ class HomePage extends StatelessWidget {
                 size: 40,
               ),
               onPressed: () async {
+                // Read the persisted userId from SharedPreferences so we don't
+                // navigate with a hard-coded (invalid) id that causes Mongo cast
+                // errors on the server.
                 final prefs = await SharedPreferences.getInstance();
                 final savedUserId = prefs.getString('userId') ?? '';
 
