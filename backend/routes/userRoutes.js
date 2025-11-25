@@ -105,4 +105,27 @@ router.post("/user/:id/points", async (req, res) => {
   }
 });
 
+// Get leaderboard of users sorted by totalPoints (desc)
+router.get("/users/leaderboard", async (req, res) => {
+  const { limit } = req.query;
+
+  let parsedLimit = Number(limit);
+  if (!Number.isFinite(parsedLimit) || parsedLimit <= 0) {
+    // Default limit if not provided or invalid
+    parsedLimit = 50;
+  }
+
+  try {
+    const users = await User.find()
+      .sort({ totalPoints: -1 })
+      .limit(parsedLimit)
+      .select("name email totalPoints");
+
+    return res.status(200).json(users);
+  } catch (error) {
+    console.error("Error fetching leaderboard", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+});
+
 export default router;

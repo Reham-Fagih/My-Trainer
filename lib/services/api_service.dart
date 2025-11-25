@@ -125,6 +125,7 @@ class ApiService {
       throw Exception('Unexpected error while adding points: $e');
     }
   }
+
 // how to call points:
 
   // Future<void> giveUserPoints(String userId) async {
@@ -139,4 +140,45 @@ class ApiService {
   //     print('Error adding points: $e');
   //   }
   // }
+
+// Fetch leaderboard (users sorted by totalPoints desc)
+  Future<List<Map<String, dynamic>>> fetchLeaderboard({int limit = 50}) async {
+    final uri = Uri.parse('$baseUrl/users/leaderboard?limit=$limit');
+
+    try {
+      final response = await http.get(uri).timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        final List<dynamic> data = jsonDecode(response.body);
+        return data.cast<Map<String, dynamic>>();
+      } else {
+        throw Exception(
+          'Failed to fetch leaderboard: ${response.statusCode} ${response.body}',
+        );
+      }
+    } on TimeoutException catch (_) {
+      throw Exception('Request timed out while fetching leaderboard.');
+    } on SocketException catch (e) {
+      throw Exception('Network error while fetching leaderboard: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error while fetching leaderboard: $e');
+    }
+  }
 }
+// how to call leaderboard:
+// final apiService = ApiService(baseUrl: 'http://localhost:5000'); // or your real base URL
+
+// Future<void> loadLeaderboard() async {
+//   try {
+//     final leaders = await apiService.fetchLeaderboard(limit: 10);
+
+//     for (final user in leaders) {
+//       print(
+//         '${user['name']} - ${user['email']} - ${user['totalPoints']} pts',
+//       );
+//     }
+//   } catch (e) {
+//     print('Error loading leaderboard: $e');
+//   }
+// }
+//
