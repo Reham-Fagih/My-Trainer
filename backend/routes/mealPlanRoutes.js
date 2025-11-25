@@ -1,7 +1,7 @@
 import express from "express";
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import authMiddleware from "../middleware/authMiddleware.js";
+import authMiddleware from "../middleware/auth.js";
 import User from "../models/User.js";
 dotenv.config();
 

@@ -1,8 +1,8 @@
 import express from "express";
 import OpenAI from "openai";
 import dotenv from "dotenv";
-import User from "../models/userModel.js"; 
-import authMiddleware from "../middleware/authMiddleware.js"; 
+import User from "../models/User.js";
+import authMiddleware from "../middleware/auth.js";
 dotenv.config();
 
 const router = express.Router();
@@ -13,7 +13,7 @@ const model = "openai/gpt-4o-mini";
 
 router.post("/", authMiddleware, async (req, res) => {
   const { environment, duration, weight, height, bodyFat } = req.body;
-  const userId = req.user.id; 
+  const userId = req.user.id;
 
   try {
     const client = new OpenAI({ apiKey: GITHUB_TOKEN, baseURL: endpoint });
@@ -50,7 +50,6 @@ router.post("/", authMiddleware, async (req, res) => {
       message: "Workout plan saved successfully ✅",
       savedPlan: workoutPlan,
     });
-
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

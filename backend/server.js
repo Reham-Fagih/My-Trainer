@@ -9,13 +9,13 @@ import predictRoutes from "./routes/predictRoutes.js";
 import mealPlanRoutes from "./routes/mealPlanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+const app = express();
 
 app.use("/api", userRoutes);
 import {
   validateMealplan,
   validateWorkout,
 } from "./middleware/validateFields.js";
-const app = express();
 app.use(cors());
 app.use(express.json());
 
