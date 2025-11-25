@@ -53,18 +53,22 @@ const workoutPlanSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-const userSchema = new mongoose.Schema({
-  name: { type: String, required: false },
-  email: { type: String, required: true, unique: true },
-  phone: { type: String, required: true },
-  password: { type: String, required: true },
-  age: { type: Number, required: false },
-  height: { type: Number, required: false },
-  weight: { type: Number, required: false },
-  gender: { type: String, enum: ["male", "female"], required: false },
-  predictions: [predictionSchema],
-  nutritionPlans: [nutritionPlanSchema],
-  workoutPlans: [workoutPlanSchema],
-}, { timestamps: true });
+const userSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: false },
+    email: { type: String, required: true, unique: true },
+    phone: { type: String, required: true },
+    password: { type: String, required: true },
+    age: { type: Number, required: false },
+    height: { type: Number, required: false },
+    weight: { type: Number, required: false },
+    gender: { type: String, enum: ["male", "female"], required: false },
+    totalPoints: { type: Number, default: 0 },
+    predictions: [predictionSchema],
+    nutritionPlans: [nutritionPlanSchema],
+    workoutPlans: [workoutPlanSchema],
+  },
+  { timestamps: true }
+);
 
 export default mongoose.model("User", userSchema);

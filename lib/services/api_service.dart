@@ -87,4 +87,56 @@ class ApiService {
       throw Exception('Error fetching workout plan: $e');
     }
   }
+
+  // Add points to a user
+  Future<Map<String, dynamic>> addUserPoints({
+    required String userId,
+    required int points,
+  }) async {
+    final uri = Uri.parse('$baseUrl/user/$userId/points');
+
+    final body = jsonEncode({
+      'points': points,
+    });
+
+    try {
+      final response = await http
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: body,
+          )
+          .timeout(const Duration(seconds: 30));
+
+      if (response.statusCode == 200) {
+        return jsonDecode(response.body) as Map<String, dynamic>;
+      } else {
+        throw Exception(
+          'Failed to add points: ${response.statusCode} ${response.body}',
+        );
+      }
+    } on TimeoutException catch (_) {
+      throw Exception('Request timed out while adding points.');
+    } on SocketException catch (e) {
+      throw Exception('Network error while adding points: ${e.message}');
+    } catch (e) {
+      throw Exception('Unexpected error while adding points: $e');
+    }
+  }
+// how to call points:
+
+  // Future<void> giveUserPoints(String userId) async {
+  //   try {
+  //     // e.g. add 50 points
+  //     final updatedUser =
+  //         await apiService.addUserPoints(userId: userId, points: 50);
+
+  //     final newTotal = updatedUser['totalPoints'];
+  //     print('New total points: $newTotal');
+  //   } catch (e) {
+  //     print('Error adding points: $e');
+  //   }
+  // }
 }

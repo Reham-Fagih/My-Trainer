@@ -1,4 +1,5 @@
 import express from "express";
+import mongoose from "mongoose";
 import User from "../models/User.js";
 import { validateMealplan } from "../middleware/validateFields.js";
 
@@ -66,6 +67,41 @@ router.post("/user/:email/workout", async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Increment user totalPoints by a given amount
+router.post("/user/:id/points", async (req, res) => {
+  const { id } = req.params;
+  const { points } = req.body;
+
+  // Basic validation
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ message: "Invalid user ID" });
+  }
+
+  const pointsNumber = Number(points);
+  if (!Number.isFinite(pointsNumber) || pointsNumber <= 0) {
+    return res
+      .status(400)
+      .json({ message: "'points' must be a positive number" });
+  }
+
+  try {
+    const updatedUser = await User.findByIdAndUpdate(
+      id,
+      { $inc: { totalPoints: pointsNumber } },
+      { new: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    return res.status(200).json(updatedUser);
+  } catch (error) {
+    console.error("Error updating user points", error);
+    return res.status(500).json({ message: "Server error", error });
   }
 });
 
