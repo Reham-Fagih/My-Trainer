@@ -9,19 +9,34 @@ import predictRoutes from "./routes/predictRoutes.js";
 import mealPlanRoutes from "./routes/mealPlanRoutes.js";
 import workoutPlanRoutes from "./routes/workoutPlanRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
-const app = express();
-
-app.use("/api", userRoutes);
 import {
   validateMealplan,
   validateWorkout,
 } from "./middleware/validateFields.js";
+
+const app = express();
+
+// Global middleware FIRST
 app.use(cors());
 app.use(express.json());
 
+// Request logger
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   next();
+});
+
+// Routes
+app.use("/api", userRoutes);
+app.use("/", authRoutes);
+app.use("/", predictRoutes);
+app.use("/api/mealplan", mealPlanRoutes);
+app.use("/api/workoutplan", workoutPlanRoutes);
+app.use("/api/mealplan", validateMealplan, mealPlanRoutes);
+app.use("/api/workoutplan", validateWorkout, workoutPlanRoutes);
+
+app.get("/ping", (req, res) => {
+  res.send("pong");
 });
 
 mongoose
@@ -29,17 +44,6 @@ mongoose
   .then(() => console.log("✅ Connected to MongoDB"))
   .catch((err) => console.error("❌ MongoDB connection error:", err));
 
-app.use("/", authRoutes);
-app.use("/", predictRoutes);
-app.use("/api/mealplan", mealPlanRoutes);
-app.use("/api/workoutplan", workoutPlanRoutes);
-app.use("/api/mealplan", validateMealplan, mealPlanRoutes);
-app.use("/api/workoutplan", validateWorkout, workoutPlanRoutes);
-app.get("/ping", (req, res) => {
-  // Verbose ping: log requester info and headers so device<->host
-  // connection problems are easy to diagnose.
-  res.send("pong");
-});
-
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+app.listen(PORT, () => console.log("Env token is:", process.env.GITHUB_TOKEN));
+console.log(`🚀 Server running on port ${PORT}`);

@@ -72,8 +72,10 @@ router.post("/user/:email/workout", async (req, res) => {
 
 // Increment user totalPoints by a given amount
 router.post("/user/:id/points", async (req, res) => {
+  console.log("/user/:id/points body:", req.body);
+
   const { id } = req.params;
-  const { points } = req.body;
+  const { points } = req.body || {};
 
   // Basic validation
   if (!mongoose.Types.ObjectId.isValid(id)) {

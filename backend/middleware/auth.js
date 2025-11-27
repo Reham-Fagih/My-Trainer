@@ -9,16 +9,12 @@ function authMiddleware(req, res, next) {
   const token = authHeader.split(" ")[1];
   if (!token) return res.status(401).json({ message: "Invalid token format" });
 
-  jwt.verify(
-    token,
-    process.env.JWT_SECRET || "supersecretkey",
-    (err, decoded) => {
-      if (err)
-        return res.status(403).json({ message: "Invalid or expired token" });
-      req.user = decoded;
-      next();
-    }
-  );
+  jwt.verify(token, process.env.JWT_SECRET || "KeYScea", (err, decoded) => {
+    if (err)
+      return res.status(403).json({ message: "Invalid or expired token" });
+    req.user = decoded;
+    next();
+  });
 }
 
 export default authMiddleware;

@@ -48,7 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchUserData() async {
     try {
       final response = await http.get(
-        Uri.parse("http://10.0.2.2:3000/api/user/$userEmail"),
+        Uri.parse("http://10.0.2.2:5000/api/user/$userEmail"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $authToken",
