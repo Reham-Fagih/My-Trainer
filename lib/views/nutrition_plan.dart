@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -24,13 +25,15 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   bool isLoading = true;
   String? errorMessage;
 
+  Map<String, bool> completedMeals = {};
+
   @override
   void initState() {
     super.initState();
     _loadMealPlan();
   }
 
-  //Load Meal Plan from AI Server
+  // LOAD MEAL PLAN FROM AI SERVER
   Future<void> _loadMealPlan() async {
     try {
       final uri = Uri.parse("http://10.0.2.2:5000/api/mealplan");
@@ -65,7 +68,36 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
     }
   }
 
-  // Save Meal Plan to MongoDB
+  Future<void> _addPointsForMeal(String mealName) async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userEmail = prefs.getString("userEmail") ?? "";
+
+      final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail/points");
+
+      final response = await http.post(
+        uri,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"points": 5}),
+      );
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("$mealName completed! +5 points added 🎉")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("Failed to add points: ${response.body}")),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Error adding points: $e")),
+      );
+    }
+  }
+
+  // SAVE MEAL PLAN
   Future<void> saveNutritionPlan() async {
     final prefs = await SharedPreferences.getInstance();
     final userEmail = prefs.getString('userEmail') ?? "";
@@ -129,7 +161,6 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
     return Column(
       children: [
-        // Back button
         Align(
           alignment: Alignment.topLeft,
           child: IconButton(
@@ -148,7 +179,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
         const SizedBox(height: 10),
 
-        // Info Box
+        // INFO BOX
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           padding: const EdgeInsets.all(16),
@@ -180,26 +211,8 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           ),
         ),
 
-        // Calories Box
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.85),
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: const Text(
-            "Your calories",
-            style: TextStyle(
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              color: Color(0xFF2A4F53),
-            ),
-          ),
-        ),
-
         const SizedBox(height: 20),
 
-        // Macros
         Wrap(
           spacing: 12,
           runSpacing: 12,
@@ -214,7 +227,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
         const SizedBox(height: 20),
 
-        // Save Plan Button
+        // SAVE PLAN BUTTON
         Center(
           child: ElevatedButton(
             onPressed: saveNutritionPlan,
@@ -231,7 +244,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
         const SizedBox(height: 20),
 
-        // Meal Cards
+        // MEALS LIST WITH CHECKBOXES
         Expanded(
           child: ListView(
             padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -244,7 +257,6 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           ),
         ),
 
-        // Home button
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: IconButton(
@@ -282,12 +294,16 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
     );
   }
 
+  // MEAL CARD WITH CHECKBOX
   Widget _buildMealCard({
     required String title,
     required List items,
   }) {
     final totalCalories =
         items.fold<int>(0, (sum, item) => sum + (item["calories"] as int));
+
+    // Initialize checkbox state if first time
+    completedMeals.putIfAbsent(title, () => false);
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),
@@ -309,25 +325,49 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                title,
-                style: const TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF2A4F53),
-                ),
+              // TITLE + CALORIES
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF2A4F53),
+                    ),
+                  ),
+                  Text(
+                    "$totalCalories kcal",
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF05262F),
+                    ),
+                  ),
+                ],
               ),
-              Text(
-                "$totalCalories kcal",
-                style: const TextStyle(
-                  fontSize: 16,
-                  fontWeight: FontWeight.bold,
-                  color: Color(0xFF05262F),
-                ),
+
+              // CHECKBOX
+              Checkbox(
+                value: completedMeals[title],
+                activeColor: const Color(0xFF04383D),
+                onChanged: (value) async {
+                  setState(() {
+                    completedMeals[title] = value ?? false;
+                  });
+
+                  if (value == true) {
+                    await _addPointsForMeal(title);
+                  }
+                },
               ),
             ],
           ),
+
           const SizedBox(height: 10),
+
+          // MEAL ITEMS
           Column(
             children: items.map<Widget>((item) {
               return Padding(
