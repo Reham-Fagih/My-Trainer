@@ -33,6 +33,9 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   //Load Meal Plan from AI Server
   Future<void> _loadMealPlan() async {
     try {
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('authToken') ?? "";
+
       final uri = Uri.parse("http://10.0.2.2:5000/api/mealplan");
       final body = jsonEncode({
         "weight": 75,
@@ -42,13 +45,26 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
         "goal": widget.goal,
       });
 
+      final headers = <String, String>{
+        'Content-Type': 'application/json',
+      };
+
+      if (authToken.isNotEmpty) {
+        headers['Authorization'] = 'Bearer $authToken';
+      }
+
       final response = await http
-          .post(uri, headers: {'Content-Type': 'application/json'}, body: body)
+          .post(uri, headers: headers, body: body)
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body);
+        final plan = decoded is Map<String, dynamic>
+            ? decoded["nutritionPlan"] as Map<String, dynamic>?
+            : null;
+
         setState(() {
-          mealPlan = jsonDecode(response.body);
+          mealPlan = plan ?? decoded as Map<String, dynamic>;
           isLoading = false;
         });
       } else {
@@ -124,8 +140,12 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
   Widget _buildContent(BuildContext context, Map<String, dynamic>? plan) {
     final calories = plan?["calories"];
-    final macros = plan?["macros"];
-    final meals = plan?["mealPlans"];
+    final macros = plan?["macros"] as Map<String, dynamic>?;
+    final meals = plan?["mealPlans"] as List<dynamic>?;
+
+    final protein = macros != null ? macros["protein"] : null;
+    final fats = macros != null ? macros["fats"] : null;
+    final carbs = macros != null ? macros["carbohydrates"] : null;
 
     return Column(
       children: [
@@ -205,10 +225,18 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
           runSpacing: 12,
           alignment: WrapAlignment.center,
           children: [
-            _buildMacroBox("$calories Cal"),
-            _buildMacroBox("${macros["protein"]} g P"),
-            _buildMacroBox("${macros["fats"]} g F"),
-            _buildMacroBox("${macros["carbohydrates"]} g C"),
+            _buildMacroBox(
+              calories != null ? "$calories Cal" : "Cal: N/A",
+            ),
+            _buildMacroBox(
+              protein != null ? "$protein g P" : "P: N/A",
+            ),
+            _buildMacroBox(
+              fats != null ? "$fats g F" : "F: N/A",
+            ),
+            _buildMacroBox(
+              carbs != null ? "$carbs g C" : "C: N/A",
+            ),
           ],
         ),
 
@@ -233,15 +261,27 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
         // Meal Cards
         Expanded(
-          child: ListView(
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            children: meals.map<Widget>((meal) {
-              return _buildMealCard(
-                title: meal["meal"],
-                items: meal["items"],
-              );
-            }).toList(),
-          ),
+          child: meals == null || meals.isEmpty
+              ? const Center(
+                  child: Text(
+                    "No meal plan data available.",
+                    style: TextStyle(color: Colors.white, fontSize: 16),
+                  ),
+                )
+              : ListView(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  children: meals.map<Widget>((meal) {
+                    final mealMap = meal as Map<String, dynamic>;
+                    final title = mealMap["meal"] ?? "Meal";
+                    final items =
+                        (mealMap["items"] as List<dynamic>? ?? <dynamic>[]);
+
+                    return _buildMealCard(
+                      title: title,
+                      items: items,
+                    );
+                  }).toList(),
+                ),
         ),
 
         // Home button

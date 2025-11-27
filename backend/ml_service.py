@@ -35,3 +35,5 @@ def predict():
         return jsonify({"bfPercent": round(bf_percent, 2)})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+
+
