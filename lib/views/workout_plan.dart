@@ -35,6 +35,18 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   // Load Workout Plan from AI server
   Future<void> _loadWorkoutPlan() async {
     try {
+      // Read token from SharedPreferences (set during login)
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('authToken') ?? '';
+
+      if (authToken.isEmpty) {
+        setState(() {
+          errorMessage = "No token found. Please log in again.";
+          isLoading = false;
+        });
+        return;
+      }
+
       final uri = Uri.parse("http://10.0.2.2:5000/api/workoutplan");
       final body = jsonEncode({
         "environment": widget.selectedEnvironment,
@@ -42,12 +54,22 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       });
 
       final response = await http
-          .post(uri, headers: {'Content-Type': 'application/json'}, body: body)
+          .post(
+            uri,
+            headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer $authToken',
+            },
+            body: body,
+          )
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         setState(() {
-          workoutPlan = jsonDecode(response.body);
+          final decoded = jsonDecode(response.body);
+
+          // API currently returns { message, savedPlan: { ...weeklyPlans... } }
+          workoutPlan = decoded['savedPlan'] ?? decoded;
 
           final weeklyPlans = workoutPlan?["weeklyPlans"] ?? [];
           for (var dayPlan in weeklyPlans) {
