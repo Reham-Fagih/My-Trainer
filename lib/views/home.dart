@@ -232,15 +232,42 @@ class HomePage extends StatelessWidget {
           ),
           TextButton(
             child: Text("Current Plan"),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+
+              final prefs = await SharedPreferences.getInstance();
+              final userId = prefs.getString('userId') ?? '';
+
+              String savedActivity = '';
+              String savedGoal = '';
+
+              if (userId.isNotEmpty) {
+                savedActivity =
+                    prefs.getString('lastActivityLevel_$userId') ?? '';
+                savedGoal = prefs.getString('lastGoal_$userId') ?? '';
+              }
+
+              // If there are no per-user values, block access to Current Plan
+              if (savedActivity.isEmpty || savedGoal.isEmpty) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'No previous nutrition plan settings found. Please create a new plan first.',
+                    ),
+                  ),
+                );
+                return;
+              }
+
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => NutritionPlanPage(
-                            activityLevel: '',
-                            goal: '',
-                          )));
+                context,
+                MaterialPageRoute(
+                  builder: (_) => NutritionPlanPage(
+                    activityLevel: savedActivity,
+                    goal: savedGoal,
+                  ),
+                ),
+              );
             },
           ),
         ],
@@ -266,15 +293,42 @@ class HomePage extends StatelessWidget {
           ),
           TextButton(
             child: Text("Current Plan"),
-            onPressed: () {
+            onPressed: () async {
               Navigator.pop(context);
+
+              final prefs = await SharedPreferences.getInstance();
+              final userId = prefs.getString('userId') ?? '';
+
+              String selectedEnvironment = '';
+              int selectedDuration = 0;
+
+              if (userId.isNotEmpty) {
+                selectedEnvironment =
+                    prefs.getString('lastWorkoutEnvironment_$userId') ?? '';
+                selectedDuration =
+                    prefs.getInt('lastWorkoutDuration_$userId') ?? 0;
+              }
+
+              if (selectedEnvironment.isEmpty || selectedDuration <= 0) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text(
+                      'No previous workout plan settings found. Please create a new plan first.',
+                    ),
+                  ),
+                );
+                return;
+              }
+
               Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (_) => WorkoutPlanPage(
-                            selectedEnvironment: '',
-                            selectedDuration: 1,
-                          )));
+                context,
+                MaterialPageRoute(
+                  builder: (_) => WorkoutPlanPage(
+                    selectedEnvironment: selectedEnvironment,
+                    selectedDuration: selectedDuration,
+                  ),
+                ),
+              );
             },
           ),
         ],

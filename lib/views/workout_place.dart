@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'workout_plan.dart';
 
 class WorkoutPlacePage extends StatelessWidget {
@@ -11,7 +12,8 @@ class WorkoutPlacePage extends StatelessWidget {
       body: Stack(
         children: [
           Positioned.fill(
-            child: Image.asset('assets/images/WorkoutpageBackground.png', fit: BoxFit.cover),
+            child: Image.asset('assets/images/WorkoutpageBackground.png',
+                fit: BoxFit.cover),
           ),
           Positioned(
             top: 150,
@@ -20,7 +22,10 @@ class WorkoutPlacePage extends StatelessWidget {
             child: const Center(
               child: Text(
                 "Workout From",
-                style: TextStyle(fontSize: 35, fontWeight: FontWeight.bold, color: Color(0xFF004754)),
+                style: TextStyle(
+                    fontSize: 35,
+                    fontWeight: FontWeight.bold,
+                    color: Color(0xFF004754)),
               ),
             ),
           ),
@@ -29,15 +34,7 @@ class WorkoutPlacePage extends StatelessWidget {
             children: [
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WorkoutPlanPage(
-                        selectedEnvironment: 'home',
-                        selectedDuration: selectedDuration,
-                      ),
-                    ),
-                  );
+                  _goToWorkoutPlan(context, 'home', selectedDuration);
                 },
                 child: Container(
                   margin: const EdgeInsets.only(top: 100),
@@ -51,15 +48,7 @@ class WorkoutPlacePage extends StatelessWidget {
               ),
               GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => WorkoutPlanPage(
-                        selectedEnvironment: 'gym',
-                        selectedDuration: selectedDuration,
-                      ),
-                    ),
-                  );
+                  _goToWorkoutPlan(context, 'gym', selectedDuration);
                 },
                 child: Container(
                   height: 250,
@@ -79,3 +68,27 @@ class WorkoutPlacePage extends StatelessWidget {
   }
 }
 
+Future<void> _goToWorkoutPlan(
+  BuildContext context,
+  String environment,
+  int duration,
+) async {
+  final prefs = await SharedPreferences.getInstance();
+
+  // Persist last used workout config for "Current Plan"
+  final userId = prefs.getString('userId') ?? '';
+  if (userId.isNotEmpty) {
+    await prefs.setString('lastWorkoutEnvironment_$userId', environment);
+    await prefs.setInt('lastWorkoutDuration_$userId', duration);
+  }
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => WorkoutPlanPage(
+        selectedEnvironment: environment,
+        selectedDuration: duration,
+      ),
+    ),
+  );
+}

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'nutrition_page.dart';
 import 'nutrition_plan.dart';
 
@@ -72,15 +73,7 @@ class NutritionGoalPage extends StatelessWidget {
                     // Lose Weight
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NutritionPlanPage(
-                              activityLevel: activityLevel,
-                              goal: "Lose Weight",
-                            ),
-                          ),
-                        );
+                        _goToPlan(context, activityLevel, "Lose Weight");
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -113,15 +106,7 @@ class NutritionGoalPage extends StatelessWidget {
                     // Maintain Weight
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NutritionPlanPage(
-                              activityLevel: activityLevel,
-                              goal: "Maintain Weight",
-                            ),
-                          ),
-                        );
+                        _goToPlan(context, activityLevel, "Maintain Weight");
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -149,15 +134,7 @@ class NutritionGoalPage extends StatelessWidget {
                     // Gain Weight
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => NutritionPlanPage(
-                              activityLevel: activityLevel,
-                              goal: "Gain Weight",
-                            ),
-                          ),
-                        );
+                        _goToPlan(context, activityLevel, "Gain Weight");
                       },
                       child: Container(
                         padding: const EdgeInsets.symmetric(
@@ -195,4 +172,32 @@ class NutritionGoalPage extends StatelessWidget {
       ),
     );
   }
+}
+
+Future<void> _goToPlan(
+  BuildContext context,
+  String activityLevel,
+  String goal,
+) async {
+  // Persist last used activity level and goal for "Current Plan" button
+  final prefs = await SharedPreferences.getInstance();
+  await prefs.setString('lastActivityLevel', activityLevel);
+  await prefs.setString('lastGoal', goal);
+
+  // Also save per-user values so different users don't share settings
+  final userId = prefs.getString('userId') ?? '';
+  if (userId.isNotEmpty) {
+    await prefs.setString('lastActivityLevel_$userId', activityLevel);
+    await prefs.setString('lastGoal_$userId', goal);
+  }
+
+  Navigator.push(
+    context,
+    MaterialPageRoute(
+      builder: (context) => NutritionPlanPage(
+        activityLevel: activityLevel,
+        goal: goal,
+      ),
+    ),
+  );
 }
