@@ -24,6 +24,8 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   bool isLoading = true;
   String? errorMessage;
 
+  Map<String, bool> selectedExercises = {};
+
   @override
   void initState() {
     super.initState();
@@ -46,6 +48,14 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       if (response.statusCode == 200) {
         setState(() {
           workoutPlan = jsonDecode(response.body);
+
+          final weeklyPlans = workoutPlan?["weeklyPlans"] ?? [];
+          for (var dayPlan in weeklyPlans) {
+            for (var ex in dayPlan["exercises"]) {
+              selectedExercises[ex["name"]] = false;
+            }
+          }
+
           isLoading = false;
         });
       } else {
@@ -62,13 +72,18 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     }
   }
 
-  // Save Workout Plan to MongoDB
+  // Save Workout Plan to MongoDB sends only selected exercises
   Future<void> saveWorkoutPlan() async {
     final prefs = await SharedPreferences.getInstance();
     final userEmail = prefs.getString('userEmail') ?? "";
     final authToken = prefs.getString('authToken') ?? "";
 
     if (userEmail.isEmpty || workoutPlan == null) return;
+
+    final selected = selectedExercises.entries
+        .where((e) => e.value == true)
+        .map((e) => e.key)
+        .toList();
 
     final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail/workout");
 
@@ -79,7 +94,10 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
           "Content-Type": "application/json",
           "Authorization": "Bearer $authToken",
         },
-        body: jsonEncode(workoutPlan),
+        body: jsonEncode({
+          "selectedExercises": selected,
+          "fullPlan": workoutPlan,
+        }),
       );
 
       if (response.statusCode == 200) {
@@ -158,7 +176,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
         const SizedBox(height: 10),
 
-        // Workout Plan List
+        // Workout Plan List with CHECKBOXES
         Expanded(
           child: ListView.builder(
             itemCount: weeklyPlans.length,
@@ -175,14 +193,21 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
                         fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   children: exercises.map<Widget>((exercise) {
+                    final name = exercise["name"];
                     final repsOrDuration = exercise["reps"] != null
                         ? 'Reps: ${exercise["reps"]}'
                         : 'Duration: ${exercise["duration"]}';
 
-                    return ListTile(
-                      title: Text(exercise["name"] ?? ""),
+                    return CheckboxListTile(
+                      title: Text(name ?? ""),
                       subtitle: Text(
                           'Sets: ${exercise["sets"] ?? "-"}, $repsOrDuration'),
+                      value: selectedExercises[name] ?? false,
+                      onChanged: (value) {
+                        setState(() {
+                          selectedExercises[name] = value!;
+                        });
+                      },
                     );
                   }).toList(),
                 ),

@@ -48,7 +48,10 @@ class MyApp extends StatelessWidget {
         "/LogInPage": (context) => const LogInPage(),
         "/ProfilePage": (context) => const ProfilePage(),
         "/HomePage": (context) => HomePage(),
-        "/UploadPage": (context) => const UploadScreen(),
+        "/UploadPage": (context) => const UploadScreen(
+              baseUrl: '',
+              userId: '',
+            ),
       },
     );
   }

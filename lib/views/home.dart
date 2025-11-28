@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-
+import 'nutrition_plan.dart';
+import 'workout_plan.dart';
 import 'nutrition_page.dart';
 import 'workout_duration.dart';
 import 'profile.dart';
@@ -40,25 +41,37 @@ class HomePage extends StatelessWidget {
                       context,
                       'Nutrition',
                       'assets/images/Nutrition.png',
-                      ActivityLevelPage(),
+                      onTap: () => showNutritionDialog(context),
                     ),
                     buildMenuItem(
                       context,
                       'Workout',
                       'assets/images/Workout.png',
-                      WorkoutDurationPage(),
+                      onTap: () => showWorkoutDialog(context),
                     ),
                     buildMenuItem(
                       context,
                       'Leaderboard',
                       'assets/images/Leaderboard.png',
-                      const LeaderBoardPage(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LeaderBoardPage()),
+                        );
+                      },
                     ),
                     buildMenuItem(
                       context,
                       'Points',
                       'assets/images/Points.png',
-                      const LeaderBoardPage(),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => LeaderBoardPage()),
+                        );
+                      },
                     ),
                   ],
                 ),
@@ -159,7 +172,11 @@ class HomePage extends StatelessWidget {
 
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => const UploadScreen()),
+                  MaterialPageRoute(
+                      builder: (context) => const UploadScreen(
+                            baseUrl: '',
+                            userId: '',
+                          )),
                 );
               },
             ),
@@ -199,19 +216,82 @@ class HomePage extends StatelessWidget {
     );
   }
 
+  void showNutritionDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Nutrition Plan"),
+        content:
+            Text("Do you want a NEW nutrition plan or view your CURRENT plan?"),
+        actions: [
+          TextButton(
+            child: Text("New Plan"),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => ActivityLevelPage()));
+            },
+          ),
+          TextButton(
+            child: Text("Current Plan"),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => NutritionPlanPage(
+                            activityLevel: '',
+                            goal: '',
+                          )));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
+  void showWorkoutDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text("Workout Plan"),
+        content:
+            Text("Do you want a NEW workout plan or view your CURRENT plan?"),
+        actions: [
+          TextButton(
+            child: Text("New Plan"),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => WorkoutDurationPage()));
+            },
+          ),
+          TextButton(
+            child: Text("Current Plan"),
+            onPressed: () {
+              Navigator.pop(context);
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (_) => WorkoutPlanPage(
+                            selectedEnvironment: '',
+                            selectedDuration: 1,
+                          )));
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget buildMenuItem(
     BuildContext context,
     String label,
-    String iconPath,
-    Widget destinationPage,
-  ) {
+    String iconPath, {
+    required VoidCallback onTap,
+  }) {
     return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => destinationPage),
-        );
-      },
+      onTap: onTap,
       child: Column(
         children: [
           Expanded(
@@ -226,7 +306,7 @@ class HomePage extends StatelessWidget {
             ),
           ),
           SizedBox(height: 5),
-          Text(label, style: TextStyle(fontSize: 16)),
+          Text(label, style: TextStyle(fontSize: 16, color: Colors.white)),
         ],
       ),
     );
