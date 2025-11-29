@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/config.dart';
 import 'home.dart';
 
 class PointsPage extends StatefulWidget {
@@ -27,18 +28,22 @@ class _PointsPageState extends State<PointsPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final userEmail = prefs.getString("userEmail") ?? "";
+      debugPrint("Loaded userEmail from prefs: '$userEmail'");
 
       if (userEmail.isEmpty) {
         setState(() {
-          errorMessage = "No user email found.";
+          errorMessage = "No user email found in preferences.";
           isLoading = false;
         });
         return;
       }
 
-      final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail");
+      final uri = Uri.parse("$baseUrl/api/user/$userEmail");
+      debugPrint("Fetching points for email: $userEmail at $uri");
 
       final response = await http.get(uri).timeout(const Duration(seconds: 20));
+      debugPrint(
+          "PointsPage response: ${response.statusCode} ${response.body}");
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
@@ -75,13 +80,13 @@ class _PointsPageState extends State<PointsPage> {
           child: isLoading
               ? const Center(child: CircularProgressIndicator())
               : errorMessage != null
-              ? Center(
-                  child: Text(
-                    "Error: $errorMessage",
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                )
-              : _buildContent(),
+                  ? Center(
+                      child: Text(
+                        "Error: $errorMessage",
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    )
+                  : _buildContent(),
         ),
       ),
     );

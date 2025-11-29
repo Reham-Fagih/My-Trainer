@@ -82,6 +82,10 @@ class AuthService {
             if (data['user'] != null && data['user']['_id'] != null) {
               await prefs.setString('userId', data['user']['_id'].toString());
             }
+            // Persist user email for other features like PointsPage
+            if (email.isNotEmpty) {
+              await prefs.setString('userEmail', email);
+            }
           }
           return '✅ ${data['message'] ?? 'Login successful'}';
         } else {

@@ -49,6 +49,8 @@ class _LogInPageState extends State<LogInPage> {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString("authToken", token);
         await prefs.setString("userId", user["_id"] ?? '');
+        // Persist email for use in PointsPage and other features
+        await prefs.setString("userEmail", email);
 
         Navigator.pushReplacement(
           context,
