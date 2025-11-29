@@ -7,6 +7,7 @@ import 'profile.dart';
 import 'upload_screen.dart';
 import 'leader_board.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'PointsPage.dart';
 
 class HomePage extends StatelessWidget {
   @override
@@ -68,8 +69,7 @@ class HomePage extends StatelessWidget {
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                              builder: (context) => LeaderBoardPage()),
+                          MaterialPageRoute(builder: (context) => PointsPage()),
                         );
                       },
                     ),
