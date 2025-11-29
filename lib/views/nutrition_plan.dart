@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/config.dart';
 import 'nutrition_goal.dart';
 import 'home.dart';
 
@@ -87,23 +88,35 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   Future<void> _addPointsForMeal(String mealName) async {
     try {
       final prefs = await SharedPreferences.getInstance();
-      final userEmail = prefs.getString("userEmail") ?? "";
+      final userId = prefs.getString("userId") ?? "";
 
-      final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail/points");
+      if (userId.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text("User not found. Please log in again."),
+          ),
+        );
+        return;
+      }
+
+      final uri = Uri.parse("$baseUrl/api/user/$userId/points");
 
       final response = await http.post(
         uri,
-        headers: {"Content-Type": "application/json"},
-        body: jsonEncode({"points": 5}),
+        headers: const {"Content-Type": "application/json"},
+        body: jsonEncode({"points": 4}),
       );
 
       if (response.statusCode == 200) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("$mealName completed! +5 points added 🎉")),
+          SnackBar(content: Text("$mealName completed! +4 points added")),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text("Failed to add points: ${response.body}")),
+          SnackBar(
+            content:
+                Text("Failed to add points for $mealName: ${response.body}"),
+          ),
         );
       }
     } catch (e) {
