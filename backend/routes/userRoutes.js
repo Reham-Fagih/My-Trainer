@@ -123,7 +123,16 @@ router.get("/users/leaderboard", async (req, res) => {
       .limit(parsedLimit)
       .select("name email totalPoints");
 
-    return res.status(200).json(users);
+    return res.status(200).json(
+      users.map(u => ({
+        name: u.name && u.name.trim() !== "" 
+            ? u.name              
+            : u.email.split("@")[0], 
+        email: u.email,
+        totalPoints: u.totalPoints
+      }))
+    );
+
   } catch (error) {
     console.error("Error fetching leaderboard", error);
     return res.status(500).json({ message: "Server error", error });
