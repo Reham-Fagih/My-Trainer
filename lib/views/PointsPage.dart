@@ -72,7 +72,7 @@ class _PointsPageState extends State<PointsPage> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/images/PointsBackground.png"),
+            image: AssetImage("assets/images/pointsPage.png"),
             fit: BoxFit.cover,
           ),
         ),
