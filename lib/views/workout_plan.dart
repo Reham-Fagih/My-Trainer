@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
+import '../services/config.dart';
 
 import 'home.dart';
 
@@ -138,6 +139,39 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
     }
   }
 
+  Future<void> _addPointsForExerciseToggle(bool checked) async {
+    if (!checked) return; // only award points when checking, not unchecking
+
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('userId');
+
+      if (userId == null || userId.isEmpty) {
+        return; // no logged-in user; silently skip
+      }
+
+      final uri = Uri.parse('$baseUrl/api/user/$userId/points');
+      final response = await http.post(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode(<String, dynamic>{
+          'points': 4,
+        }),
+      );
+
+      // Optional: log non-success responses for debugging
+      if (response.statusCode != 200) {
+        // ignore: avoid_print
+        print(
+            'Failed to add points: \\${response.statusCode} \\${response.body}');
+      }
+    } catch (_) {
+      // For now, ignore point update failures to avoid breaking UX.
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -229,6 +263,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
                         setState(() {
                           selectedExercises[name] = value!;
                         });
+                        _addPointsForExerciseToggle(value ?? false);
                       },
                     );
                   }).toList(),
