@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
+import '../widgets/app_footer.dart';
 
 class ResultsPage extends StatefulWidget {
   final double bodyFatPercentage;
@@ -86,27 +87,30 @@ class _ResultsPageState extends State<ResultsPage>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AppFooter(),
       body: Container(
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/images/bg.png'),
-            fit: BoxFit.cover,
-          ),
-        ),
+        color: Colors.white,
         child: Column(
           children: [
-            SizedBox(height: 40),
-            _buildHeader(),
+            // Top header image for visual consistency
+            Container(
+              height: 180,
+              decoration: const BoxDecoration(
+                image: DecorationImage(
+                  image: AssetImage("assets/images/Header.png"),
+                  fit: BoxFit.contain,
+                  alignment: Alignment.topCenter,
+                ),
+              ),
+            ),
 
-            // المحتوى الرئيسي
+            // Main content
             Expanded(
               child: SingleChildScrollView(
                 padding: const EdgeInsets.all(20),
                 child: Column(
                   children: [
-                    // نتيجة التحليل الرئيسية
                     _buildMainResult(),
-
                     const SizedBox(height: 30),
                   ],
                 ),

@@ -5,7 +5,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/config.dart';
 import '../widgets/app_footer.dart';
 
-import 'home.dart';
+// import 'home.dart'; // no longer needed; navigation handled by AppFooter
 
 class WorkoutPlanPage extends StatefulWidget {
   final String selectedEnvironment;
@@ -337,23 +337,6 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
     return Column(
       children: [
-        // Home button
-        Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Align(
-            alignment: Alignment.topLeft,
-            child: IconButton(
-              icon: const Icon(Icons.home, color: Colors.white),
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(builder: (context) => HomePage()),
-                );
-              },
-            ),
-          ),
-        ),
-
         const SizedBox(height: 10),
 
         // Save Button

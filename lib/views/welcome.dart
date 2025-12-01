@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class Welcome extends StatelessWidget {
   const Welcome({super.key});
@@ -66,7 +67,13 @@ class Welcome extends StatelessWidget {
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
+                      // Clear any logged-in user data when continuing as guest
+                      final prefs = await SharedPreferences.getInstance();
+                      await prefs.remove('authToken');
+                      await prefs.remove('userId');
+                      await prefs.remove('userEmail');
+
                       Navigator.pushNamed(context, "/HomePage");
                     },
                     style: ElevatedButton.styleFrom(

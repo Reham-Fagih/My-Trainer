@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/config.dart';
-import 'nutrition_goal.dart';
+// import 'nutrition_goal.dart'; // no longer needed; navigation handled by AppFooter
 import 'home.dart';
 import '../widgets/app_footer.dart';
 
@@ -348,22 +348,6 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
 
     return Column(
       children: [
-        Align(
-          alignment: Alignment.topLeft,
-          child: IconButton(
-            icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              Navigator.pushReplacement(
-                context,
-                MaterialPageRoute(
-                  builder: (context) =>
-                      NutritionGoalPage(activityLevel: widget.activityLevel),
-                ),
-              );
-            },
-          ),
-        ),
-
         const SizedBox(height: 10),
 
         // INFO BOX

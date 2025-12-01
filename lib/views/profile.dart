@@ -167,11 +167,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 children: [
                   // Header Image
                   Container(
-                    height: 200,
+                    height: 180,
                     decoration: const BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage("assets/images/Header.png"),
                         fit: BoxFit.contain,
+                        alignment: Alignment.topCenter,
                       ),
                     ),
                   ),
