@@ -90,7 +90,8 @@ Example shape (structure only, values can change):
   }
 });
 
-router.get("/", authMiddleware, async (req, res) => {
+// Get the latest saved nutrition plan for the authenticated user
+router.get("/latest", authMiddleware, async (req, res) => {
   const userId = req.user.userId || req.user.id;
 
   try {
@@ -99,7 +100,30 @@ router.get("/", authMiddleware, async (req, res) => {
       return res.status(404).json({ error: "User not found" });
     }
 
-    return res.json(user.nutritionPlans || []);
+    const plans = user.nutritionPlans || [];
+    if (!plans.length) {
+      return res
+        .status(404)
+        .json({ error: "No nutrition plans found for this user" });
+    }
+
+    // Filter out any plans that have no mealPlans array or empty mealPlans
+    const validPlans = plans.filter(
+      (p) => Array.isArray(p.mealPlans) && p.mealPlans.length > 0
+    );
+
+    if (!validPlans.length) {
+      return res.status(404).json({
+        error: "No valid nutrition plans with mealPlans found for this user",
+      });
+    }
+
+    // Sort by createdAt descending to get the most recent valid plan
+    const latestPlan = validPlans
+      .slice()
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+    return res.json({ latestPlan });
   } catch {
     return res.status(500).json({ error: "Failed to fetch nutrition plans" });
   }

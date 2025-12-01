@@ -9,11 +9,13 @@ import 'home.dart';
 class WorkoutPlanPage extends StatefulWidget {
   final String selectedEnvironment;
   final int selectedDuration;
+  final bool useExistingPlan; // when true, load latest plan from backend
 
   const WorkoutPlanPage({
     super.key,
     required this.selectedEnvironment,
     required this.selectedDuration,
+    this.useExistingPlan = false,
   });
 
   @override
@@ -35,7 +37,74 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   @override
   void initState() {
     super.initState();
-    _loadWorkoutPlan();
+    if (widget.useExistingPlan) {
+      _loadExistingWorkoutPlan();
+    } else {
+      _loadWorkoutPlan();
+    }
+  }
+
+  // Load latest saved workout plan for this user from backend
+  Future<void> _loadExistingWorkoutPlan() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('authToken') ?? '';
+      final userEmail = prefs.getString('userEmail') ?? '';
+
+      if (authToken.isEmpty || userEmail.isEmpty) {
+        setState(() {
+          errorMessage = "No user session found. Please log in again.";
+          isLoading = false;
+        });
+        return;
+      }
+
+      final uri =
+          Uri.parse('http://10.0.2.2:5000/api/user/$userEmail/workout/latest');
+
+      final response = await http.get(
+        uri,
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+        final latest = decoded['latestPlan'] as Map<String, dynamic>?;
+
+        if (latest == null) {
+          setState(() {
+            errorMessage = 'No saved workout plan found.';
+            isLoading = false;
+          });
+          return;
+        }
+
+        setState(() {
+          workoutPlan = latest;
+          final weeklyPlans = workoutPlan?["weeklyPlans"] ?? [];
+          for (var dayPlan in weeklyPlans) {
+            for (var ex in dayPlan["exercises"]) {
+              selectedExercises[ex["name"]] = false;
+            }
+          }
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage =
+              'Failed to load current workout plan: ${response.statusCode} ${response.body}';
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
   }
 
   // Load Workout Plan from AI server

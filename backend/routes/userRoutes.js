@@ -30,7 +30,7 @@ router.put("/user/:email", async (req, res) => {
   }
 });
 
-router.post("/user/:email/nutrition", validateMealplan, async (req, res) => {
+router.post("/user/:email/nutrition", async (req, res) => {
   const { email } = req.params;
   const planData = req.body;
 
@@ -39,7 +39,16 @@ router.post("/user/:email/nutrition", validateMealplan, async (req, res) => {
     if (!user) return res.status(404).json({ message: "User not found" });
 
     user.nutritionPlans = user.nutritionPlans || [];
-    user.nutritionPlans.push(planData);
+    user.nutritionPlans.push({
+      activityLevel: planData.activityLevel,
+      goal: planData.goal,
+      weight: planData.weight,
+      bodyFat: planData.bodyFat,
+      gender: planData.gender,
+      calories: planData.calories,
+      macros: planData.macros,
+      mealPlans: planData.mealPlans,
+    });
 
     await user.save();
 
@@ -69,6 +78,46 @@ router.post("/user/:email/workout", async (req, res) => {
     res.status(500).json({ message: "Server error" });
   }
 });
+
+// Get the latest saved workout plan for a user
+router.get("/user/:email/workout/latest", async (req, res) => {
+  const { email } = req.params;
+
+  try {
+    const user = await User.findOne({ email });
+    if (!user) return res.status(404).json({ message: "User not found" });
+
+    const plans = user.workoutPlans || [];
+    if (!plans.length) {
+      return res
+        .status(404)
+        .json({ message: "No workout plans found for this user" });
+    }
+
+    // Filter out any plans that have no weeklyPlans
+    const validPlans = plans.filter(
+      (p) => Array.isArray(p.weeklyPlans) && p.weeklyPlans.length > 0
+    );
+
+    if (!validPlans.length) {
+      return res
+        .status(404)
+        .json({ message: "No valid workout plans with weeklyPlans found" });
+    }
+
+    // Sort by createdAt descending and return most recent valid plan
+    const latestPlan = validPlans
+      .slice()
+      .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+
+    return res.json({ latestPlan });
+  } catch (error) {
+    console.error("Error fetching latest workout plan", error);
+    return res.status(500).json({ message: "Server error", error });
+  }
+});
+
+// (Removed duplicate /user/:email/workout/latest handler; single handler is defined above)
 
 // Increment user totalPoints by a given amount
 router.post("/user/:id/points", async (req, res) => {
@@ -124,15 +173,12 @@ router.get("/users/leaderboard", async (req, res) => {
       .select("name email totalPoints");
 
     return res.status(200).json(
-      users.map(u => ({
-        name: u.name && u.name.trim() !== "" 
-            ? u.name              
-            : u.email.split("@")[0], 
+      users.map((u) => ({
+        name: u.name && u.name.trim() !== "" ? u.name : u.email.split("@")[0],
         email: u.email,
-        totalPoints: u.totalPoints
+        totalPoints: u.totalPoints,
       }))
     );
-
   } catch (error) {
     console.error("Error fetching leaderboard", error);
     return res.status(500).json({ message: "Server error", error });

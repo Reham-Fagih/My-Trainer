@@ -265,6 +265,7 @@ class HomePage extends StatelessWidget {
                   builder: (_) => NutritionPlanPage(
                     activityLevel: savedActivity,
                     goal: savedGoal,
+                    useExistingPlan: true,
                   ),
                 ),
               );
@@ -326,6 +327,7 @@ class HomePage extends StatelessWidget {
                   builder: (_) => WorkoutPlanPage(
                     selectedEnvironment: selectedEnvironment,
                     selectedDuration: selectedDuration,
+                    useExistingPlan: true,
                   ),
                 ),
               );

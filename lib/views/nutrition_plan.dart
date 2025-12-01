@@ -10,11 +10,13 @@ import 'home.dart';
 class NutritionPlanPage extends StatefulWidget {
   final String activityLevel;
   final String goal;
+  final bool useExistingPlan; // when true, load latest saved plan
 
   const NutritionPlanPage({
     super.key,
     required this.activityLevel,
     required this.goal,
+    this.useExistingPlan = false,
   });
 
   @override
@@ -36,7 +38,66 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   @override
   void initState() {
     super.initState();
-    _loadMealPlan();
+    if (widget.useExistingPlan) {
+      _loadExistingMealPlan();
+    } else {
+      _loadMealPlan();
+    }
+  }
+
+  // LOAD LATEST SAVED MEAL PLAN FROM BACKEND
+  Future<void> _loadExistingMealPlan() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final authToken = prefs.getString('authToken') ?? "";
+
+      if (authToken.isEmpty) {
+        setState(() {
+          errorMessage = "No user session found. Please log in again.";
+          isLoading = false;
+        });
+        return;
+      }
+
+      final uri = Uri.parse("http://10.0.2.2:5000/api/mealplan/latest");
+
+      final response = await http.get(
+        uri,
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer $authToken",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+        final latest = decoded["latestPlan"] as Map<String, dynamic>?;
+
+        if (latest == null) {
+          setState(() {
+            errorMessage = "No saved nutrition plan found.";
+            isLoading = false;
+          });
+          return;
+        }
+
+        setState(() {
+          mealPlan = latest;
+          isLoading = false;
+        });
+      } else {
+        setState(() {
+          errorMessage =
+              "Failed to load current nutrition plan: ${response.statusCode} ${response.body}";
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        errorMessage = e.toString();
+        isLoading = false;
+      });
+    }
   }
 
   // LOAD MEAL PLAN FROM AI SERVER
@@ -215,13 +276,26 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
     final uri = Uri.parse("http://10.0.2.2:5000/api/user/$userEmail/nutrition");
 
     try {
+      // Build payload including required metadata for schema
+      final body = {
+        "activityLevel": widget.activityLevel,
+        "goal": widget.goal,
+        "weight": userWeight,
+        "bodyFat": userBodyFat,
+        // TODO: replace with real gender from profile if available
+        "gender": "male",
+        "calories": mealPlan!["calories"],
+        "macros": mealPlan!["macros"],
+        "mealPlans": mealPlan!["mealPlans"],
+      };
+
       final response = await http.post(
         uri,
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $authToken",
         },
-        body: jsonEncode(mealPlan),
+        body: jsonEncode(body),
       );
 
       if (response.statusCode == 200) {
