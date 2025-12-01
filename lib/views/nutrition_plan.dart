@@ -26,6 +26,11 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   bool isLoading = true;
   String? errorMessage;
 
+  // User metrics coming from profile/backend
+  double? userWeight;
+  double? userHeight;
+  double? userBodyFat;
+
   Map<String, bool> completedMeals = {};
 
   @override
@@ -39,11 +44,84 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
     try {
       final prefs = await SharedPreferences.getInstance();
       final authToken = prefs.getString('authToken') ?? "";
+      final userEmail = prefs.getString('userEmail');
+
+      if (userEmail == null || userEmail.isEmpty) {
+        setState(() {
+          errorMessage = "Please log in again. User email not found.";
+          isLoading = false;
+        });
+        return;
+      }
+
+      // Fetch latest profile data to get weight/height/bodyFat
+      final userResponse = await http.get(
+        Uri.parse("http://10.0.2.2:5000/api/user/$userEmail"),
+        headers: {
+          "Content-Type": "application/json",
+          if (authToken.isNotEmpty) "Authorization": "Bearer $authToken",
+        },
+      );
+
+      if (userResponse.statusCode != 200) {
+        setState(() {
+          errorMessage = "Failed to load profile information.";
+          isLoading = false;
+        });
+        return;
+      }
+
+      final userData = jsonDecode(userResponse.body) as Map<String, dynamic>;
+
+      final double? weight = (userData["weight"] != null)
+          ? double.tryParse(userData["weight"].toString())
+          : null;
+      final double? height = (userData["height"] != null)
+          ? double.tryParse(userData["height"].toString())
+          : null;
+
+      // Body fat from last prediction if available
+      double? bodyFat;
+      if (userData["predictions"] != null &&
+          (userData["predictions"] as List).isNotEmpty) {
+        final lastPred =
+            (userData["predictions"] as List).last as Map<String, dynamic>;
+        bodyFat = double.tryParse(lastPred["value"].toString());
+      }
+
+      // Guard: user must complete profile and have body fat prediction
+      if (weight == null || height == null || bodyFat == null) {
+        setState(() {
+          isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              "Please complete your profile (weight, height) and body fat scan before generating a meal plan.",
+            ),
+          ),
+        );
+
+        // Navigate user to profile page to complete missing data
+        Future.microtask(() {
+          Navigator.pushNamed(context, "/ProfilePage");
+        });
+        return;
+      }
+
+      // Store for display
+      setState(() {
+        userWeight = weight;
+        userHeight = height;
+        userBodyFat = bodyFat;
+      });
 
       final uri = Uri.parse("http://10.0.2.2:5000/api/mealplan");
       final body = jsonEncode({
-        "weight": 75,
-        "bodyFat": 18,
+        "weight": weight,
+        "bodyFat": bodyFat,
+        // TODO: replace with real gender field if available on user
         "gender": "male",
         "activityLevel": widget.activityLevel,
         "goal": widget.goal,
@@ -237,9 +315,12 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
                   style: const TextStyle(
                       fontSize: 16, fontWeight: FontWeight.w600)),
               const SizedBox(height: 6),
-              const Text("Weight: 75 kg"),
-              const Text("Height: 180 cm"),
-              const Text("Body Fat: 18 %"),
+              Text(
+                  "Weight: ${userWeight != null ? userWeight!.toStringAsFixed(1) : 'N/A'} kg"),
+              Text(
+                  "Height: ${userHeight != null ? userHeight!.toStringAsFixed(1) : 'N/A'} cm"),
+              Text(
+                  "Body Fat: ${userBodyFat != null ? userBodyFat!.toStringAsFixed(1) : 'N/A'} %"),
             ],
           ),
         ),
