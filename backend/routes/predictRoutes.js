@@ -71,9 +71,24 @@ router.post(
         await user.save();
       }
 
-      res.json({ bfPercent });
+      // Pass through status and body from Python service
+      res.status(response.status).json({ bfPercent });
     } catch (err) {
-      res.status(500).json({ error: err.message });
+      if (err.response) {
+        // The Python service responded with an error (e.g., 400 with a JSON { error: "..." })
+        const status = err.response.status || 500;
+        const data = err.response.data || { error: "Prediction service error" };
+        console.error(
+          `[/predict] ML service error ${status}:`,
+          JSON.stringify(data)
+        );
+        return res.status(status).json(data);
+      }
+
+      console.error("[/predict] Unexpected error:", err.message);
+      res.status(500).json({
+        error: "Internal server error while contacting prediction service.",
+      });
     } finally {
       if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
     }

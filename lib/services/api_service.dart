@@ -11,15 +11,18 @@ class ApiService {
 
   // Upload image for prediction (existing)
   Future<Map<String, dynamic>> uploadImageForPrediction(
-      File imageFile, String userId) async {
+    File imageFile,
+    String userId,
+  ) async {
     final prefs = await SharedPreferences.getInstance();
     final token = prefs.getString('authToken');
 
     final uri = Uri.parse('$baseUrl/predict');
     final request = http.MultipartRequest('POST', uri);
 
-    request.files
-        .add(await http.MultipartFile.fromPath('image', imageFile.path));
+    request.files.add(
+      await http.MultipartFile.fromPath('image', imageFile.path),
+    );
     request.fields['userId'] = userId;
 
     if (token != null) {
@@ -29,25 +32,66 @@ class ApiService {
     try {
       // Send the multipart request and apply a timeout so the UI doesn't hang
       // indefinitely if the server or ML service is slow or unreachable.
-      final streamed =
-          await request.send().timeout(const Duration(seconds: 60));
+      final streamed = await request.send().timeout(
+            const Duration(seconds: 60),
+          );
 
-      final response = await http.Response.fromStream(streamed).timeout(
-        const Duration(seconds: 30),
-      );
+      final response = await http.Response.fromStream(
+        streamed,
+      ).timeout(const Duration(seconds: 30));
+
+      // Debug log to see exactly what the backend returns
+      print('Prediction response: ${response.statusCode} ${response.body}');
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
+      } else if (response.statusCode == 400) {
+        // Validation or user-facing error from the ML service.
+        // The backend returns a JSON body like { "error": "..." }.
+        final body = response.body;
+        try {
+          final decoded = jsonDecode(body);
+
+          if (decoded is Map) {
+            final raw = decoded['error'];
+            final message = raw?.toString().trim();
+
+            if (message != null && message.isNotEmpty) {
+              // Surface the backend's human-readable error directly.
+              throw Exception(message);
+            }
+          }
+
+          // If we reach here, JSON didn't have a usable `error` field.
+          throw Exception(
+            'We could not use this photo. Please upload a clear photo of your body.',
+          );
+        } catch (e) {
+          // If parsing fails for any reason, log and fall back to a personalized message.
+          // ignore: avoid_print
+          print('Error parsing 400 response: $e, body=$body');
+          throw Exception(
+            'We could not use this photo. Please upload a clear photo of your body.',
+          );
+        }
       } else if (response.statusCode == 401) {
         // Helpful error for missing/invalid token
-        throw Exception('Unauthorized (401): ${response.body}');
-      } else {
+        throw Exception('Your session has expired. Please log in again.');
+      } else if (response.statusCode >= 500) {
+        // Backend/server issue – show a friendly message
         throw Exception(
-            'Prediction failed: ${response.statusCode} ${response.body}');
+          'We are having trouble analyzing your photo right now. Please try again in a few moments.',
+        );
+      } else {
+        // Fallback for unexpected status codes
+        throw Exception(
+          'We could not complete the prediction. Please try again later.',
+        );
       }
     } on TimeoutException catch (_) {
       throw Exception(
-          'Request timed out. The server may be busy or unreachable.');
+        'Request timed out. The server may be busy or unreachable.',
+      );
     } on SocketException catch (e) {
       throw Exception('Network error while uploading image: ${e.message}');
     } catch (e) {
@@ -63,6 +107,9 @@ class ApiService {
     int height = 180,
     int bodyFat = 18,
   }) async {
+    final prefs = await SharedPreferences.getInstance();
+    final token = prefs.getString('authToken');
+
     final uri = Uri.parse('$baseUrl/api/workoutplan');
     final body = jsonEncode({
       'environment': environment,
@@ -72,16 +119,25 @@ class ApiService {
       'bodyFat': bodyFat,
     });
 
+    final headers = <String, String>{'Content-Type': 'application/json'};
+
+    if (token != null && token.isNotEmpty) {
+      headers['Authorization'] = 'Bearer $token';
+    }
+
+    print('Workout headers: $headers');
+
     try {
       final response = await http
-          .post(uri, headers: {'Content-Type': 'application/json'}, body: body)
+          .post(uri, headers: headers, body: body)
           .timeout(const Duration(seconds: 60));
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);
       } else {
         throw Exception(
-            'Failed to fetch workout plan: ${response.statusCode} ${response.body}');
+          'Failed to fetch workout plan: ${response.statusCode} ${response.body}',
+        );
       }
     } catch (e) {
       throw Exception('Error fetching workout plan: $e');
@@ -95,19 +151,11 @@ class ApiService {
   }) async {
     final uri = Uri.parse('$baseUrl/user/$userId/points');
 
-    final body = jsonEncode({
-      'points': points,
-    });
+    final body = jsonEncode({'points': points});
 
     try {
       final response = await http
-          .post(
-            uri,
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: body,
-          )
+          .post(uri, headers: {'Content-Type': 'application/json'}, body: body)
           .timeout(const Duration(seconds: 30));
 
       if (response.statusCode == 200) {
@@ -126,7 +174,7 @@ class ApiService {
     }
   }
 
-// how to call points:
+  // how to call points:
 
   // Future<void> giveUserPoints(String userId) async {
   //   try {
@@ -141,10 +189,9 @@ class ApiService {
   //   }
   // }
 
-// Fetch leaderboard (users sorted by totalPoints desc)
+  // Fetch leaderboard (users sorted by totalPoints desc)
   Future<List<Map<String, dynamic>>> fetchLeaderboard({int limit = 50}) async {
     final uri = Uri.parse('$baseUrl/users/leaderboard?limit=$limit');
-
     try {
       final response = await http.get(uri).timeout(const Duration(seconds: 30));
 

@@ -72,8 +72,18 @@ class _UploadScreenState extends State<UploadScreen> {
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(context)
-          .showSnackBar(SnackBar(content: Text("Error: $e")));
+      final text = e.toString().replaceFirst('Exception: ', '');
+      // Log to verify we're catching the error and see the exact message
+      // from the backend (useful during debugging).
+      // ignore: avoid_print
+      print('Upload error: $text');
+
+      final messenger = ScaffoldMessenger.maybeOf(context);
+      if (messenger != null) {
+        messenger
+          ..hideCurrentSnackBar()
+          ..showSnackBar(SnackBar(content: Text(text)));
+      }
     } finally {
       setState(() => _loading = false);
     }
@@ -82,92 +92,108 @@ class _UploadScreenState extends State<UploadScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            // Image Header
-            Container(
-              height: 200,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/Header.png"),
-                  fit: BoxFit.contain,
-                ),
-              ),
+      body: Column(
+        children: [
+          // Image Header (fixed height)
+          SizedBox(
+            height: 120,
+            width: double.infinity,
+            child: Image.asset(
+              "assets/images/Header.png",
+              fit: BoxFit.fill,
+              alignment: Alignment.topCenter,
             ),
+          ),
 
-            // Take Picture Button
-            GestureDetector(
-              onTap: () => pickImage(ImageSource.camera),
-              child: Container(
-                margin: const EdgeInsets.only(top: 45.0),
-                height: 200,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/TakePicButton.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-
-            // Pick from Gallery Button
-            GestureDetector(
-              onTap: () => pickImage(ImageSource.gallery),
-              child: Container(
-                margin: const EdgeInsets.only(top: 30.0),
-                height: 200,
-                decoration: const BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage("assets/images/UploudButton.png"),
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-            ),
-
-            // Upload & Predict Button
-            if (_selectedImage != null)
-              Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: ElevatedButton.icon(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blueGrey,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15),
-                    ),
-                    elevation: 2,
-                    padding: const EdgeInsets.symmetric(
-                        horizontal: 40, vertical: 15),
-                  ),
-                  icon: _loading
-                      ? const SizedBox(
-                          height: 16,
-                          width: 16,
-                          child: CircularProgressIndicator(
-                            color: Colors.white,
-                            strokeWidth: 2,
+          // Content area: center the two boxes vertically between header and footer
+          Expanded(
+            child: Center(
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    // Take Picture Button
+                    GestureDetector(
+                      onTap: () => pickImage(ImageSource.camera),
+                      child: Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 8.0),
+                          height: 200,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  AssetImage("assets/images/TakePicButton.png"),
+                              fit: BoxFit.contain,
+                            ),
                           ),
-                        )
-                      : const Icon(
-                          Icons.cloud_upload,
-                          color: Colors.white,
-                          size: 30,
                         ),
-                  label: Text(
-                    _loading ? "Uploading" : "Predict",
-                    style: const TextStyle(
-                      fontSize: 20,
-                      color: Colors.white,
+                      ),
                     ),
-                  ),
-                  onPressed: _loading ? null : uploadAndPredict,
+
+                    // Pick from Gallery Button
+                    GestureDetector(
+                      onTap: () => pickImage(ImageSource.gallery),
+                      child: Center(
+                        child: Container(
+                          margin: const EdgeInsets.only(top: 16.0),
+                          height: 200,
+                          decoration: const BoxDecoration(
+                            image: DecorationImage(
+                              image:
+                                  AssetImage("assets/images/UploudButton.png"),
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+
+                    // Upload & Predict Button
+                    if (_selectedImage != null)
+                      Padding(
+                        padding: const EdgeInsets.all(30.0),
+                        child: ElevatedButton.icon(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blueGrey,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(15),
+                            ),
+                            elevation: 2,
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40, vertical: 15),
+                          ),
+                          icon: _loading
+                              ? const SizedBox(
+                                  height: 16,
+                                  width: 16,
+                                  child: CircularProgressIndicator(
+                                    color: Colors.white,
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(
+                                  Icons.cloud_upload,
+                                  color: Colors.white,
+                                  size: 30,
+                                ),
+                          label: Text(
+                            _loading ? "Uploading" : "Predict",
+                            style: const TextStyle(
+                              fontSize: 20,
+                              color: Colors.white,
+                            ),
+                          ),
+                          onPressed: _loading ? null : uploadAndPredict,
+                        ),
+                      ),
+                  ],
                 ),
               ),
-          ],
-        ),
+            ),
+          ),
+        ],
       ),
-
       // ---------------- Footer ----------------
       bottomNavigationBar: Container(
         height: 90,
