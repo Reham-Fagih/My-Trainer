@@ -28,16 +28,24 @@ class _SignUpPageState extends State<SignUpPage> {
         return;
       }
 
-      if (!RegExp(r'^\d{7,15}$').hasMatch(phone)) {
+      final emailRegex =
+          RegExp(r'^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,6}$');
+
+      if (!emailRegex.hasMatch(email)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid phone number')),
+          const SnackBar(content: Text('Please enter a valid email address')),
         );
         return;
       }
 
-      if (!RegExp(r'^.+@.+\..{2,}$').hasMatch(email)) {
+      // Saudi phone validation: must start with 05... (local) or 9665... (international)
+      final saudiPhonePattern = RegExp(r'^(05\d{8}|9665\d{8})$');
+      if (!saudiPhonePattern.hasMatch(phone)) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a valid email')),
+          const SnackBar(
+            content: Text(
+                'Please enter a valid Saudi phone (05xxxxxxxx or 9665xxxxxxxx)'),
+          ),
         );
         return;
       }

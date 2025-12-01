@@ -84,6 +84,41 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> updateUserData() async {
+    // Basic client-side validation
+    final age = int.tryParse(ageController.text.trim());
+    final weight = double.tryParse(weightController.text.trim());
+    final height = double.tryParse(heightController.text.trim());
+
+    if (age == null || age < 18 || age > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Please enter a valid age between 18 and 100 years."),
+        ),
+      );
+      return;
+    }
+
+    // Simple reasonable ranges; you can tweak as needed
+    if (weight == null || weight < 30 || weight > 300) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              "Please enter a reasonable weight between 30 kg and 300 kg."),
+        ),
+      );
+      return;
+    }
+
+    if (height == null || height < 100 || height > 250) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+              "Please enter a reasonable height between 100 cm and 250 cm."),
+        ),
+      );
+      return;
+    }
+
     try {
       final response = await http.put(
         // Match the same backend base URL/port used in fetchUserData
@@ -94,12 +129,13 @@ class _ProfilePageState extends State<ProfilePage> {
         },
         body: json.encode({
           "name": nameController.text,
+          // Email is read-only in the UI; don't send edited value back
           "email": emailController.text,
           "phone": phoneController.text,
           // Send numeric fields as numbers where possible for better type safety
-          "age": int.tryParse(ageController.text),
-          "weight": double.tryParse(weightController.text),
-          "height": double.tryParse(heightController.text),
+          "age": age,
+          "weight": weight,
+          "height": height,
         }),
       );
 
@@ -287,9 +323,10 @@ class _ProfilePageState extends State<ProfilePage> {
           const SizedBox(height: 5),
           TextField(
             controller: controller,
+            readOnly: label == "Email", // Email field is not editable
             decoration: InputDecoration(
               filled: true,
-              fillColor: Colors.grey[300],
+              fillColor: label == "Email" ? Colors.grey[400] : Colors.grey[300],
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide.none,
