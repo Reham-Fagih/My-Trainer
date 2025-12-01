@@ -3,10 +3,9 @@ import 'nutrition_plan.dart';
 import 'workout_plan.dart';
 import 'nutrition_page.dart';
 import 'workout_duration.dart';
-import 'profile.dart';
-import 'upload_screen.dart';
 import 'leader_board.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/app_footer.dart';
 import 'PointsPage.dart';
 
 class HomePage extends StatelessWidget {
@@ -126,91 +125,7 @@ class HomePage extends StatelessWidget {
       //     ),
       //   ),
       // ),
-      bottomNavigationBar: Container(
-        height: 90,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/FooterBackground.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.person, color: Colors.white, size: 45),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => ProfilePage()),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white, size: 45),
-              onPressed: () {
-                // Already in home
-              },
-            ),
-            IconButton(
-              icon: const Icon(
-                Icons.camera_alt_rounded,
-                color: Colors.white,
-                size: 40,
-              ),
-              onPressed: () async {
-                final prefs = await SharedPreferences.getInstance();
-                final savedUserId = prefs.getString('userId') ?? '';
-
-                if (savedUserId.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Please login to use this feature')),
-                  );
-                  return;
-                }
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const UploadScreen(),
-                  ),
-                );
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white, size: 40),
-              onPressed: () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Confirm Logout"),
-                      content: const Text("Are you sure you want to logout?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Logout"),
-                        ),
-                      ],
-                    );
-                  },
-                );
-
-                if (confirm == true) {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('authToken');
-                  Navigator.pushReplacementNamed(context, "/welcome");
-                }
-              },
-            ),
-          ],
-        ),
-      ),
+      bottomNavigationBar: const AppFooter(),
     );
   }
 

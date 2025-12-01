@@ -6,6 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../services/config.dart';
 import 'nutrition_goal.dart';
 import 'home.dart';
+import '../widgets/app_footer.dart';
 
 class NutritionPlanPage extends StatefulWidget {
   final String activityLevel;
@@ -317,6 +318,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AppFooter(),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(

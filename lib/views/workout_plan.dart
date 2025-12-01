@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/config.dart';
+import '../widgets/app_footer.dart';
 
 import 'home.dart';
 
@@ -26,7 +27,6 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   Map<String, dynamic>? workoutPlan;
   bool isLoading = true;
   String? errorMessage;
-
   Map<String, bool> selectedExercises = {};
 
   // User metrics coming from profile/backend
@@ -313,6 +313,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: const AppFooter(),
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(

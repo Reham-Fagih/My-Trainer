@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
+import '../widgets/app_footer.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -190,21 +191,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         children: [
                           Align(
                             alignment: Alignment.topRight,
-                            child: CircleAvatar(
-                              radius: 30,
-                              backgroundColor: Colors.white,
-                              child: bfPercent == null
-                                  ? Icon(Icons.percent,
-                                      size: 40, color: Colors.grey[700])
-                                  : Text(
-                                      "${bfPercent!.toStringAsFixed(1)}%",
-                                      style: const TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.bold,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                            ),
+                            child: _bodyFatCard(),
                           ),
                           const SizedBox(height: 10),
                           const Text("Edit Profile",
@@ -246,69 +233,81 @@ class _ProfilePageState extends State<ProfilePage> {
                 ],
               ),
             ),
-      bottomNavigationBar: Container(
-        height: 90,
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/images/FooterBackground.png"),
-            fit: BoxFit.cover,
-          ),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: [
-            IconButton(
-              icon: const Icon(Icons.person, color: Colors.white, size: 45),
-              onPressed: () {
-                Navigator.pushNamed(context, "/ProfilePage");
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.home, color: Colors.white, size: 45),
-              onPressed: () {
-                Navigator.pushNamed(context, "/HomePage");
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.camera_alt_rounded,
-                  color: Colors.white, size: 40),
-              onPressed: () {
-                Navigator.pushNamed(context, "/UploadScreen");
-              },
-            ),
-            IconButton(
-              icon: const Icon(Icons.logout, color: Colors.white, size: 40),
-              onPressed: () async {
-                final confirm = await showDialog<bool>(
-                  context: context,
-                  builder: (context) {
-                    return AlertDialog(
-                      title: const Text("Confirm Logout"),
-                      content: const Text("Are you sure you want to logout?"),
-                      actions: [
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, false),
-                          child: const Text("Cancel"),
-                        ),
-                        TextButton(
-                          onPressed: () => Navigator.pop(context, true),
-                          child: const Text("Logout"),
-                        ),
-                      ],
-                    );
-                  },
-                );
+      bottomNavigationBar: const AppFooter(),
+    );
+  }
 
-                if (confirm == true) {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.remove('authToken');
-                  await prefs.remove('userEmail');
-                  Navigator.pushReplacementNamed(context, "/welcome");
-                }
-              },
+  /// Nicer body-fat display than a plain CircleAvatar
+  Widget _bodyFatCard() {
+    if (bfPercent == null) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+        decoration: BoxDecoration(
+          color: Colors.black.withOpacity(0.25),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+        ),
+        child: const Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.fitness_center, color: Colors.white70, size: 20),
+            SizedBox(width: 8),
+            Text(
+              "No body fat data",
+              style: TextStyle(
+                color: Colors.white70,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
             ),
           ],
         ),
+      );
+    }
+
+    final displayValue = bfPercent!.clamp(0, 60).toStringAsFixed(1);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.black.withOpacity(0.35),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: Colors.white.withOpacity(0.4), width: 1),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            blurRadius: 8,
+            offset: const Offset(0, 3),
+          ),
+        ],
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          const Icon(Icons.fitness_center, color: Colors.white, size: 22),
+          const SizedBox(width: 8),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text(
+                "Body Fat",
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 12,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              Text(
+                "$displayValue%",
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
