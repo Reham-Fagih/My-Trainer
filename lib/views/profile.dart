@@ -48,6 +48,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> fetchUserData() async {
     try {
       final response = await http.get(
+        // Use the same backend (Node server) port for both fetching and updating
         Uri.parse("http://10.0.2.2:5000/api/user/$userEmail"),
         headers: {
           "Content-Type": "application/json",
@@ -85,7 +86,8 @@ class _ProfilePageState extends State<ProfilePage> {
   Future<void> updateUserData() async {
     try {
       final response = await http.put(
-        Uri.parse("http://10.0.2.2:3000/api/user/$userEmail"),
+        // Match the same backend base URL/port used in fetchUserData
+        Uri.parse("http://10.0.2.2:5000/api/user/$userEmail"),
         headers: {
           "Content-Type": "application/json",
           "Authorization": "Bearer $authToken",
@@ -94,9 +96,10 @@ class _ProfilePageState extends State<ProfilePage> {
           "name": nameController.text,
           "email": emailController.text,
           "phone": phoneController.text,
-          "age": ageController.text,
-          "weight": weightController.text,
-          "height": heightController.text,
+          // Send numeric fields as numbers where possible for better type safety
+          "age": int.tryParse(ageController.text),
+          "weight": double.tryParse(weightController.text),
+          "height": double.tryParse(heightController.text),
         }),
       );
 
@@ -104,6 +107,8 @@ class _ProfilePageState extends State<ProfilePage> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Profile updated successfully")),
         );
+        // Optionally refresh data from backend to ensure controllers reflect saved values
+        await fetchUserData();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Failed to update profile")),
