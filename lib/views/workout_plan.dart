@@ -27,6 +27,11 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
   Map<String, bool> selectedExercises = {};
 
+  // User metrics coming from profile/backend
+  double? userWeight;
+  double? userHeight;
+  double? userBodyFat;
+
   @override
   void initState() {
     super.initState();
@@ -39,19 +44,83 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       // Read token from SharedPreferences (set during login)
       final prefs = await SharedPreferences.getInstance();
       final authToken = prefs.getString('authToken') ?? '';
+      final userEmail = prefs.getString('userEmail');
 
-      if (authToken.isEmpty) {
+      if (authToken.isEmpty || userEmail == null || userEmail.isEmpty) {
         setState(() {
-          errorMessage = "No token found. Please log in again.";
+          errorMessage = "No user session found. Please log in again.";
           isLoading = false;
         });
         return;
       }
 
+      // Fetch user profile to get weight/height/bodyFat
+      final userResponse = await http.get(
+        Uri.parse('http://10.0.2.2:5000/api/user/$userEmail'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $authToken',
+        },
+      );
+
+      if (userResponse.statusCode != 200) {
+        setState(() {
+          errorMessage = 'Failed to load profile information.';
+          isLoading = false;
+        });
+        return;
+      }
+
+      final userData = jsonDecode(userResponse.body) as Map<String, dynamic>;
+
+      final double? weight = (userData['weight'] != null)
+          ? double.tryParse(userData['weight'].toString())
+          : null;
+      final double? height = (userData['height'] != null)
+          ? double.tryParse(userData['height'].toString())
+          : null;
+
+      double? bodyFat;
+      if (userData['predictions'] != null &&
+          (userData['predictions'] as List).isNotEmpty) {
+        final lastPred =
+            (userData['predictions'] as List).last as Map<String, dynamic>;
+        bodyFat = double.tryParse(lastPred['value'].toString());
+      }
+
+      // Guard: require profile + body fat before requesting workout plan
+      if (weight == null || height == null || bodyFat == null) {
+        setState(() {
+          isLoading = false;
+        });
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text(
+              'Please complete your profile (weight, height) and body fat scan before generating a workout plan.',
+            ),
+          ),
+        );
+
+        Future.microtask(() {
+          Navigator.pushNamed(context, '/ProfilePage');
+        });
+        return;
+      }
+
+      setState(() {
+        userWeight = weight;
+        userHeight = height;
+        userBodyFat = bodyFat;
+      });
+
       final uri = Uri.parse("http://10.0.2.2:5000/api/workoutplan");
       final body = jsonEncode({
         "environment": widget.selectedEnvironment,
         "duration": widget.selectedDuration,
+        "weight": weight,
+        "height": height,
+        "bodyFat": bodyFat,
       });
 
       final response = await http
@@ -150,7 +219,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
         return; // no logged-in user; silently skip
       }
 
-      final uri = Uri.parse('$baseUrl/api/user/$userId/points');
+      final uri = Uri.parse('$baseUrl/user/$userId/points');
       final response = await http.post(
         uri,
         headers: {
