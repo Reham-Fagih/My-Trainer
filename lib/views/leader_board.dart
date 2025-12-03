@@ -47,7 +47,7 @@ class _LeaderBoardPageState extends State<LeaderBoardPage> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/images/pointsPage.png"),
+            image: AssetImage("assets/images/LeaderboardBackground.png"),
             fit: BoxFit.cover,
           ),
         ),
