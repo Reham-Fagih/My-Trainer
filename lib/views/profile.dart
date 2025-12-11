@@ -42,7 +42,7 @@ class _ProfilePageState extends State<ProfilePage> {
       fetchUserData();
     } else {
       setState(() => isLoading = false);
-      print("⚠️ لم يتم العثور على بيانات المستخدم في SharedPreferences");
+      print("  SharedPreferences: user not found");
     }
   }
 

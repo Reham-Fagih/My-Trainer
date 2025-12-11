@@ -72,10 +72,21 @@ class _WorkoutDurationPageState extends State<WorkoutDurationPage> {
           ),
           Positioned(
             bottom: 50,
-            left: 0,
-            right: 0,
+            left: 20,
+            right: 20,
             child: Center(
               child: ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF04383D),
+                  padding: const EdgeInsets.symmetric(horizontal: 70, vertical: 10),
+                ),
+                child: const Text(
+                  "Next",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 25,
+                  ),
+                ),
                 onPressed: () {
                   int durationNum = getDurationInNumber(selectedValue);
                   Navigator.push(
@@ -85,11 +96,29 @@ class _WorkoutDurationPageState extends State<WorkoutDurationPage> {
                     ),
                   );
                 },
-                child: const Text("Next"),
+
+
               ),
+
             ),
           ),
         ],
+          /*
+          Container(
+            margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+            child: ElevatedButton(
+              onPressed: saveWorkoutPlan,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xFF04383D),
+                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+              ),
+              child: const Text(
+                "Save Plan",
+                style: TextStyle(fontSize: 18, color: Colors.white),
+              ),
+            ),
+          )
+*/
       ),
     );
   }

@@ -8,6 +8,7 @@ class Welcome extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Stack(
+
         children: [
           Image.asset(
             'assets/images/welcome.png',
@@ -19,6 +20,7 @@ class Welcome extends StatelessWidget {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
+                SizedBox(height: 90),
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
@@ -63,7 +65,7 @@ class Welcome extends StatelessWidget {
                 ),
 
                 // Continue as Guest temp
-                SizedBox(height: 60),
+                SizedBox(height: 80),
                 SizedBox(
                   width: 300,
                   child: ElevatedButton(
@@ -77,17 +79,19 @@ class Welcome extends StatelessWidget {
                       Navigator.pushNamed(context, "/HomePage");
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: EdgeInsets.symmetric(vertical: 15),
+                      backgroundColor: Colors.white.withOpacity(0.30),
+                      padding: EdgeInsets.symmetric(vertical: 5),
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(25),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                     ),
                     child: Text(
-                      "Continue as Guest",
+                      "Guest",
                       style: TextStyle(
-                        fontSize: 30,
-                        color: Color(0xFF2A4F53),
+                        fontSize: 25,
+                        color: Colors.white,
+
+
                       ),
                     ),
                   ),

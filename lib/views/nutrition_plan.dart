@@ -450,7 +450,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
                   }).toList(),
                 ),
         ),
-
+/* No need
         Padding(
           padding: const EdgeInsets.only(bottom: 8.0),
           child: IconButton(
@@ -462,7 +462,7 @@ class _NutritionPlanPageState extends State<NutritionPlanPage> {
               );
             },
           ),
-        ),
+        ),*/
       ],
     );
   }

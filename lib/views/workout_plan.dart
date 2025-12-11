@@ -317,7 +317,7 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
       body: Container(
         decoration: const BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/images/WorkoutpageBackground.png"),
+            image: AssetImage("assets/images/workoutBack.png"),
             fit: BoxFit.cover,
           ),
         ),
@@ -337,22 +337,9 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
 
     return Column(
       children: [
-        const SizedBox(height: 10),
+        const SizedBox(height: 100),
 
-        // Save Button
-        ElevatedButton(
-          onPressed: saveWorkoutPlan,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: const Color(0xFF04383D),
-            padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
-          ),
-          child: const Text(
-            "Save Plan",
-            style: TextStyle(fontSize: 18, color: Colors.white),
-          ),
-        ),
 
-        const SizedBox(height: 10),
 
         // Workout Plan List with CHECKBOXES
         Expanded(
@@ -394,6 +381,23 @@ class _WorkoutPlanPageState extends State<WorkoutPlanPage> {
             },
           ),
         ),
+
+        // Save Button
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 25),
+          child: ElevatedButton(
+            onPressed: saveWorkoutPlan,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF04383D),
+              padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 12),
+            ),
+            child: const Text(
+              "Save Plan",
+              style: TextStyle(fontSize: 18, color: Colors.white),
+            ),
+          ),
+        )
+
       ],
     );
   }

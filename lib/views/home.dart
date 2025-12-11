@@ -33,8 +33,8 @@ class HomePage extends StatelessWidget {
                 height: MediaQuery.of(context).size.height * 0.5,
                 child: GridView.count(
                   crossAxisCount: 2,
-                  crossAxisSpacing: 20,
-                  mainAxisSpacing: 20,
+                  crossAxisSpacing: 1,
+                  mainAxisSpacing: 5,
                   physics: NeverScrollableScrollPhysics(),
                   children: [
                     buildMenuItem(

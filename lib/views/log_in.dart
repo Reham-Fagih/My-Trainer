@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_first_project/services/forget_password.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/config.dart';
@@ -135,30 +134,17 @@ class _LogInPageState extends State<LogInPage> {
                         ),
                       ),
                     ),
-                    Align(
-                      child: TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (_) => ForgotPasswordPage()),
-                          );
-                        },
-                        child: Text(
-                          "Forgot password?",
-                          style:
-                              TextStyle(color: Color(0xFF6BB0FF)), // Light Blue
-                          textAlign: TextAlign.center,
-                        ),
-                      ),
-                    ),
+
+                    const SizedBox(height:50),
                     ElevatedButton(
                       onPressed: () => loginUser(context),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Color(0xFF05262F),
                         foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical:10,horizontal: 40.0),
                       ),
                       child: Text("Submit"),
+
                     ),
                     const SizedBox(height: 12),
 /*

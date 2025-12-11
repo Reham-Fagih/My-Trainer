@@ -70,50 +70,7 @@ class HomePage extends StatelessWidget {
         ),
       ),
 
-      // // nav bar
-      // bottomNavigationBar: BottomAppBar(
-      //   color: Colors.transparent,
-      //   elevation: 0,
-      //   child: Container(
-      //     color: Colors.transparent,
-      //     height: 60.0,
-      //     padding: EdgeInsets.symmetric(horizontal: 30),
-      //     child: Row(
-      //       mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      //       children: <Widget>[
-      //         IconButton(
-      //           icon: Image.asset('assets/images/Profileicon.png'),
-      //           onPressed: () {
-      //             Navigator.push(
-      //               context,
-      //               MaterialPageRoute(builder: (context) => ProfilePage()),
-      //             );
-      //           },
-      //         ),
-      //         IconButton(
-      //           icon: Image.asset('assets/images/Homeicon.png'),
-      //           onPressed: () {
-      //             // Already in home
-      //           },
-      //         ),
-      //         IconButton(
-      //           icon: Image.asset('assets/images/Cameraicon.png'),
-      //           onPressed: () {
-      //             Navigator.push(
-      //               context,
-      //               MaterialPageRoute(
-      //                 builder: (context) => UploadScreen(
-      //                   baseUrl: 'https://api.com', //temp
-      //                   userId: 'temp',
-      //                 ),
-      //               ),
-      //             );
-      //           },
-      //         ),
-      //       ],
-      //     ),
-      //   ),
-      // ),
+
       bottomNavigationBar: Container(
         height: 90,
         decoration: const BoxDecoration(

@@ -78,49 +78,61 @@ class _ResultsPageState extends State<ResultsPage>
   }
 
   String _getResultCategory() {
-    if (widget.bodyFatPercentage < 15) return "ممتاز";
-    if (widget.bodyFatPercentage < 25) return "صحي";
-    if (widget.bodyFatPercentage < 30) return "متوسط";
-    return "يحتاج تحسين";
+    if (widget.bodyFatPercentage < 14) return "Athlete";
+    if (widget.bodyFatPercentage < 18) return "Fitness";
+    if (widget.bodyFatPercentage < 25) return "Average";
+    return "Obese";
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: const AppFooter(),
-      body: Container(
-        color: Colors.white,
-        child: Column(
-          children: [
-            // Top header image for visual consistency
-            Container(
-              height: 180,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/Header.png"),
-                  fit: BoxFit.contain,
-                  alignment: Alignment.topCenter,
-                ),
-              ),
-            ),
 
-            // Main content
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  children: [
-                    _buildMainResult(),
-                    const SizedBox(height: 30),
-                  ],
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              "assets/images/resultBack.png",
+              fit: BoxFit.cover,
+            ),
+          ),
+
+          //  Main content on top
+          Column(
+            children: [
+              // Top header image
+              Container(
+                height: 180,
+                decoration: const BoxDecoration(
+                  image: DecorationImage(
+                    image: AssetImage("assets/images/Header.png"),
+                    fit: BoxFit.contain,
+                    alignment: Alignment.topCenter,
+                  ),
                 ),
               ),
-            ),
-          ],
-        ),
+
+              // Main content
+              Expanded(
+                child: SingleChildScrollView(
+                  padding: const EdgeInsets.all(20),
+                  child: Column(
+                    children: [
+                      _buildMainResult(),
+                      const SizedBox(height: 30),
+                    ],
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
+
 
   Widget _buildHeader() {
     return Container(
@@ -164,10 +176,10 @@ class _ResultsPageState extends State<ResultsPage>
       children: [
         SizedBox(height: MediaQuery.of(context).size.height * 0.13),
         const Text(
-          'Results',
+          'Result',
           style: TextStyle(
-            color: Colors.black87,
-            fontSize: 18,
+            color: Colors.black,
+            fontSize: 25,
             fontWeight: FontWeight.w600,
           ),
         ),
@@ -211,9 +223,9 @@ class _ResultsPageState extends State<ResultsPage>
                         Text(
                           _getResultCategory(),
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 16,
-                            fontWeight: FontWeight.w500,
+                            color: Colors.black12,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
                           ),
                         ),
                       ],
